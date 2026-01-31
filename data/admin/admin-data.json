@@ -1,67 +1,60 @@
 {
   "businesses": [
     {
+      "id": "pdfmender",
       "name": "PDFMender",
-      "type": "PDF Platform",
+      "type": "Utility Platform",
       "status": {
-        "engines": "merge",
-        "automation": "active",
-        "seo": "enabled",
+        "engines": "running",
+        "automation": "enabled",
+        "seo": "active",
         "errors": 0
+      },
+      "metrics": {
+        "tools_live": 1,
+        "pages_live": 1,
+        "requests_today": 0
+      },
+      "approvals": {
+        "mode": "factory",
+        "auto_publish_on_approve": true
+      }
+    },
+    {
+      "id": "heritage-archives",
+      "name": "Heritage Archives",
+      "type": "Media Platform",
+      "status": {
+        "engines": "ready",
+        "automation": "enabled",
+        "seo": "disabled",
+        "errors": 0
+      },
+      "metrics": {
+        "tools_live": 0,
+        "pages_live": 0,
+        "requests_today": 0
+      },
+      "approvals": {
+        "mode": "manual",
+        "auto_publish_on_approve": false
       }
     }
   ],
-  "factoryQueue": [
-    {
-      "id": "merge-email",
-      "name": "Merge PDFs for Email (≤10MB)",
-      "category": "SEO_VARIANT",
-      "baseEngine": "merge",
-      "risk": "LOW",
-      "status": "PENDING"
-    },
-    {
-      "id": "merge-court",
-      "name": "Merge PDFs for Court Filing",
-      "category": "SEO_VARIANT",
-      "baseEngine": "merge",
-      "risk": "LOW",
-      "status": "PENDING"
-    },
-    {
-      "id": "merge-order",
-      "name": "Merge PDFs Without Reordering",
-      "category": "SEO_VARIANT",
-      "baseEngine": "merge",
-      "risk": "LOW",
-      "status": "PENDING"
-    },
-    {
-      "id": "merge-bookmarks",
-      "name": "Merge PDFs Preserving Bookmarks",
-      "category": "SEO_VARIANT",
-      "baseEngine": "merge",
-      "risk": "LOW",
-      "status": "PENDING"
-    },
-    {
-      "id": "merge-scanned",
-      "name": "Merge PDFs for Scanned Documents",
-      "category": "SEO_VARIANT",
-      "baseEngine": "merge",
-      "risk": "LOW",
-      "status": "PENDING"
-    },
-    {
-      "id": "merge-size-threshold",
-      "name": "Merge PDFs by File Size Threshold",
-      "category": "NEW_TOOL",
-      "baseEngine": "merge",
-      "risk": "LOW",
-      "status": "PENDING"
-    }
-  ],
-  "buildQueue": [],
-  "publishedPages": [],
-  "events": []
+  "factory": {
+    "daily_generation": true,
+    "max_new_tools_per_day": 5,
+    "require_admin_action": true,
+    "statuses": [
+      "pending",
+      "approved",
+      "rejected",
+      "deferred"
+    ]
+  },
+  "system": {
+    "version": "factory-v1",
+    "single_source_of_truth": true,
+    "last_updated": "2026-01-31T00:00:00Z"
+  }
 }
