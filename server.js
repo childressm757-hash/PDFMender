@@ -1,163 +1,106 @@
-// =====================================================
-// PDFMender Platform Server (Render Safe)
-// =====================================================
-
-console.log("🔥 SERVER BOOTED — PDFMender Factory Platform");
+console.log("🔥 SERVER.JS VERSION: SHARED-MERGE-ENGINE-V1");
 
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const url = require("url");
+const { execFile } = require("child_process");
 
-// -----------------------------------------------------
-// PORT (RENDER REQUIRED)
-// -----------------------------------------------------
-const PORT = process.env.PORT;
-if (!PORT) {
-  console.error("❌ PORT not provided by Render");
-  process.exit(1);
-}
+const PORT = process.env.PORT || 10000;
 
-// -----------------------------------------------------
-// PATHS (ABSOLUTE ONLY)
-// -----------------------------------------------------
-const BASE = __dirname;
-const PUBLIC_DIR = path.join(BASE, "public");
+const PUBLIC_DIR = path.join(__dirname, "public");
+const TOOLS_DIR = path.join(PUBLIC_DIR, "tools");
+const TMP_DIR = path.join(__dirname, "tmp");
+const MERGE_ENGINE = path.join(__dirname, "engines", "document", "merge", "runMerge.js");
 
-const ADMIN_HTML = path.join(PUBLIC_DIR, "admin.html");
-const ADMIN_JS = path.join(PUBLIC_DIR, "admin.js");
+if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR, { recursive: true });
 
-const ADMIN_DATA_PATH = path.join(
-  BASE,
-  "data",
-  "admin",
-  "admin-data.json"
-);
-
-// -----------------------------------------------------
-// DATA HELPERS
-// -----------------------------------------------------
-function readAdminData() {
-  if (!fs.existsSync(ADMIN_DATA_PATH)) {
-    return { factoryQueue: [], liveTools: [], publishedPages: [] };
-  }
-  return JSON.parse(fs.readFileSync(ADMIN_DATA_PATH, "utf8"));
-}
-
-function writeAdminData(data) {
-  fs.mkdirSync(path.dirname(ADMIN_DATA_PATH), { recursive: true });
-  fs.writeFileSync(ADMIN_DATA_PATH, JSON.stringify(data, null, 2));
-}
-
-// -----------------------------------------------------
-// RESPONSE HELPERS
-// -----------------------------------------------------
-function send(res, status, body, type = "text/plain") {
-  res.writeHead(status, { "Content-Type": type });
-  res.end(body);
-}
-
-function sendJSON(res, obj) {
-  send(res, 200, JSON.stringify(obj), "application/json");
-}
-
-// -----------------------------------------------------
-// SAFE FILE SERVER (NO EISDIR)
-// -----------------------------------------------------
-function serveFile(res, filePath) {
-  if (!fs.existsSync(filePath)) {
-    return send(res, 404, "Not Found");
-  }
-
-  const stat = fs.statSync(filePath);
-
-  // 🔑 DIRECTORY HANDLING (THE FIX)
-  if (stat.isDirectory()) {
-    const indexFile = path.join(filePath, "index.html");
-    if (!fs.existsSync(indexFile)) {
-      return send(res, 404, "Directory has no index.html");
+function serveFile(res, filePath, contentType = "text/html") {
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(404);
+      return res.end("Not found");
     }
-    filePath = indexFile;
-  }
-
-  const ext = path.extname(filePath);
-  const types = {
-    ".html": "text/html",
-    ".js": "application/javascript",
-    ".json": "application/json",
-    ".css": "text/css"
-  };
-
-  send(res, 200, fs.readFileSync(filePath), types[ext] || "text/plain");
+    res.writeHead(200, { "Content-Type": contentType });
+    res.end(data);
+  });
 }
 
-// -----------------------------------------------------
-// SERVER
-// -----------------------------------------------------
+function parseMultipart(req, callback) {
+  const boundary = req.headers["content-type"].split("boundary=")[1];
+  let raw = Buffer.alloc(0);
+
+  req.on("data", chunk => raw = Buffer.concat([raw, chunk]));
+  req.on("end", () => {
+    const parts = raw.toString().split("--" + boundary);
+    const files = [];
+
+    parts.forEach(part => {
+      if (part.includes("Content-Disposition")) {
+        const match = part.match(/filename="(.+?)"/);
+        if (!match) return;
+
+        const filename = Date.now() + "-" + match[1];
+        const start = part.indexOf("\r\n\r\n") + 4;
+        const content = part.slice(start, part.lastIndexOf("\r\n"));
+
+        const filepath = path.join(TMP_DIR, filename);
+        fs.writeFileSync(filepath, content, "binary");
+        files.push(filepath);
+      }
+    });
+
+    callback(files);
+  });
+}
+
 const server = http.createServer((req, res) => {
-  const parsed = url.parse(req.url, true);
-  const pathname = decodeURIComponent(parsed.pathname);
 
-  // ---------------- ADMIN ----------------
-  if (pathname === "/admin") return serveFile(res, ADMIN_HTML);
-  if (pathname === "/admin.js") return serveFile(res, ADMIN_JS);
-
-  // ---------------- ADMIN API ----------------
-  if (pathname === "/api/admin-data") {
-    return sendJSON(res, readAdminData());
-  }
-
-  if (pathname === "/api/approve" && req.method === "POST") {
-    let body = "";
-    req.on("data", c => (body += c));
-    req.on("end", () => {
-      const { id, action } = JSON.parse(body);
-      const data = readAdminData();
-
-      const item = data.factoryQueue.find(t => t.id === id);
-      if (!item) return send(res, 404, "Item not found");
-
-      item.status = action;
-
-      if (action === "approved") {
-        const toolDir = path.join(PUBLIC_DIR, "tools", item.slug);
-        fs.mkdirSync(toolDir, { recursive: true });
-
-        fs.writeFileSync(
-          path.join(toolDir, "index.html"),
-          `<h1>${item.title}</h1><p>Tool is live.</p>`
-        );
-
-        data.publishedPages.push({
-          title: item.title,
-          url: `/tools/${item.slug}/`,
-          publishedAt: new Date().toISOString()
-        });
+  // -------- MERGE API --------
+  if (req.method === "POST" && req.url === "/api/merge") {
+    return parseMultipart(req, (files) => {
+      if (files.length < 2) {
+        res.writeHead(400);
+        return res.end("Need at least 2 PDFs");
       }
 
-      writeAdminData(data);
-      sendJSON(res, { ok: true });
+      const output = path.join(TMP_DIR, `merged-${Date.now()}.pdf`);
+
+      execFile("node", [MERGE_ENGINE, ...files, output], (err) => {
+        if (err || !fs.existsSync(output)) {
+          res.writeHead(500);
+          return res.end("Merge failed");
+        }
+
+        res.writeHead(200, {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": "attachment; filename=merged.pdf"
+        });
+
+        fs.createReadStream(output).pipe(res);
+      });
     });
-    return;
   }
 
-  // ---------------- TOOLS ----------------
-  if (pathname.startsWith("/tools/")) {
-    return serveFile(res, path.join(PUBLIC_DIR, pathname));
+  // -------- ADMIN --------
+  if (req.url === "/admin") {
+    return serveFile(res, path.join(PUBLIC_DIR, "admin.html"));
   }
 
-  // ---------------- STATIC ----------------
-  const staticPath = path.join(PUBLIC_DIR, pathname);
-  if (staticPath.startsWith(PUBLIC_DIR) && fs.existsSync(staticPath)) {
-    return serveFile(res, staticPath);
+  // -------- TOOLS --------
+  if (req.url.startsWith("/tools/")) {
+    const toolPath = path.join(TOOLS_DIR, req.url.replace("/tools/", ""), "index.html");
+    return serveFile(res, toolPath);
   }
 
-  send(res, 404, "Not Found");
+  // -------- STATIC --------
+  if (req.url === "/" || req.url === "") {
+    return res.end("PDFMender is running.");
+  }
+
+  res.writeHead(404);
+  res.end("Not found");
 });
 
-// -----------------------------------------------------
-// START
-// -----------------------------------------------------
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Server listening on 0.0.0.0:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`✅ Server listening on ${PORT}`);
 });

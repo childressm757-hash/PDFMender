@@ -8,7 +8,26 @@
   ],
   "factory": {
     "queue": [],
-    "published": []
+    "published": [
+      {
+        "id": "merge-email-10mb",
+        "title": "Merge PDFs for Email (≤10MB)",
+        "engine": "merge",
+        "route": "/tools/merge-pdfs-for-email-10mb/",
+        "status": "approved",
+        "created_at": "2026-01-31T20:12:01.717Z",
+        "approved_at": "2026-01-31T20:12:12.318Z"
+      },
+      {
+        "id": "merge-court",
+        "title": "Merge PDFs for Court Filing",
+        "engine": "merge",
+        "route": "/tools/merge-pdfs-for-court/",
+        "status": "approved",
+        "created_at": "2026-01-31T20:12:01.725Z",
+        "approved_at": "2026-01-31T20:12:12.319Z"
+      }
+    ]
   },
   "system": {
     "version": "factory-v1",

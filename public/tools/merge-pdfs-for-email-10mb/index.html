@@ -1,2 +1,43 @@
-<h1>Merge PDFs for Email (≤10MB)</h1>
-<p>Tool is live.</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Merge PDFs for Email (≤10MB)</title>
+</head>
+<body>
+  <h1>Merge PDFs for Email (≤10MB)</h1>
+
+  <form id="mergeForm">
+    <input type="file" name="pdfs" multiple accept="application/pdf" required />
+    <br><br>
+    <button type="submit">Merge PDFs</button>
+  </form>
+
+  <script>
+    document.getElementById("mergeForm").addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      const files = e.target.querySelector("input").files;
+
+      for (const f of files) formData.append("pdfs", f);
+
+      const res = await fetch("/api/merge", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!res.ok) {
+        alert("Merge failed");
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "merged.pdf";
+      a.click();
+    });
+  </script>
+</body>
+</html>

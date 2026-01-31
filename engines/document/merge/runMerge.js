@@ -1,28 +1,19 @@
-const { spawn } = require("child_process");
-const path = require("path");
+const { PDFDocument } = require("pdf-lib");
+const fs = require("fs");
 
-module.exports = function runMerge(inputs, outputPath) {
-  return new Promise((resolve, reject) => {
-    const scriptPath = path.join(__dirname, "merge.py");
+(async () => {
+  const args = process.argv.slice(2);
+  const output = args.pop();
 
-    const args = [
-      scriptPath,
-      ...inputs,
-      outputPath
-    ];
+  const merged = await PDFDocument.create();
 
-    const proc = spawn("python3", args);
+  for (const file of args) {
+    const bytes = fs.readFileSync(file);
+    const pdf = await PDFDocument.load(bytes);
+    const pages = await merged.copyPages(pdf, pdf.getPageIndices());
+    pages.forEach(p => merged.addPage(p));
+  }
 
-    proc.stderr.on("data", (data) => {
-      reject(data.toString());
-    });
-
-    proc.on("close", (code) => {
-      if (code === 0) {
-        resolve(outputPath);
-      } else {
-        reject(`Merge failed with exit code ${code}`);
-      }
-    });
-  });
-};
+  const outBytes = await merged.save();
+  fs.writeFileSync(output, outBytes);
+})();
