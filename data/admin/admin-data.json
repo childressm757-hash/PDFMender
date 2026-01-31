@@ -3,58 +3,15 @@
     {
       "id": "pdfmender",
       "name": "PDFMender",
-      "type": "Utility Platform",
-      "status": {
-        "engines": "running",
-        "automation": "enabled",
-        "seo": "active",
-        "errors": 0
-      },
-      "metrics": {
-        "tools_live": 1,
-        "pages_live": 1,
-        "requests_today": 0
-      },
-      "approvals": {
-        "mode": "factory",
-        "auto_publish_on_approve": true
-      }
-    },
-    {
-      "id": "heritage-archives",
-      "name": "Heritage Archives",
-      "type": "Media Platform",
-      "status": {
-        "engines": "ready",
-        "automation": "enabled",
-        "seo": "disabled",
-        "errors": 0
-      },
-      "metrics": {
-        "tools_live": 0,
-        "pages_live": 0,
-        "requests_today": 0
-      },
-      "approvals": {
-        "mode": "manual",
-        "auto_publish_on_approve": false
-      }
+      "type": "Utility Platform"
     }
   ],
   "factory": {
-    "daily_generation": true,
-    "max_new_tools_per_day": 5,
-    "require_admin_action": true,
-    "statuses": [
-      "pending",
-      "approved",
-      "rejected",
-      "deferred"
-    ]
+    "queue": [],
+    "published": []
   },
   "system": {
     "version": "factory-v1",
-    "single_source_of_truth": true,
-    "last_updated": "2026-01-31T00:00:00Z"
+    "single_source_of_truth": true
   }
 }

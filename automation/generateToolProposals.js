@@ -1,30 +1,35 @@
 const fs = require("fs");
 const path = require("path");
 
-const adminDataPath = path.join(__dirname, "..", "data", "admin", "admin-data.json");
+const ADMIN_PATH = path.join(__dirname, "..", "data", "admin", "admin-data.json");
 
-function load() {
-  return JSON.parse(fs.readFileSync(adminDataPath, "utf8"));
-}
-function save(data) {
-  fs.writeFileSync(adminDataPath, JSON.stringify(data, null, 2));
-}
-
-const proposals = [
-  { id: "merge-email", name: "Merge PDFs for Email (≤10MB)", category: "SEO_VARIANT", baseEngine: "merge", risk: "LOW", status: "PENDING" },
-  { id: "merge-court", name: "Merge PDFs for Court Filing", category: "SEO_VARIANT", baseEngine: "merge", risk: "LOW", status: "PENDING" },
-  { id: "merge-order", name: "Merge PDFs Without Reordering", category: "SEO_VARIANT", baseEngine: "merge", risk: "LOW", status: "PENDING" },
-  { id: "merge-bookmarks", name: "Merge PDFs Preserving Bookmarks", category: "SEO_VARIANT", baseEngine: "merge", risk: "LOW", status: "PENDING" },
-  { id: "merge-scanned", name: "Merge PDFs for Scanned Documents", category: "SEO_VARIANT", baseEngine: "merge", risk: "LOW", status: "PENDING" },
-  { id: "merge-size-threshold", name: "Merge PDFs by File Size Threshold", category: "NEW_TOOL", baseEngine: "merge", risk: "LOW", status: "PENDING" }
+const tools = [
+  {
+    id: "merge-email-10mb",
+    title: "Merge PDFs for Email (≤10MB)",
+    engine: "merge",
+    route: "/tools/merge-pdfs-for-email-10mb/"
+  },
+  {
+    id: "merge-court",
+    title: "Merge PDFs for Court Filing",
+    engine: "merge",
+    route: "/tools/merge-pdfs-for-court/"
+  }
 ];
 
-const data = load();
-data.factoryQueue = data.factoryQueue || [];
+const data = JSON.parse(fs.readFileSync(ADMIN_PATH, "utf8"));
 
-for (const p of proposals) {
-  if (!data.factoryQueue.find(x => x.id === p.id)) data.factoryQueue.push(p);
-}
+tools.forEach(t => {
+  if (!data.factory.queue.find(x => x.id === t.id) &&
+      !data.factory.published.find(x => x.id === t.id)) {
+    data.factory.queue.push({
+      ...t,
+      status: "pending",
+      created_at: new Date().toISOString()
+    });
+  }
+});
 
-save(data);
-console.log("✅ Proposals generated/ensured.");
+fs.writeFileSync(ADMIN_PATH, JSON.stringify(data, null, 2));
+console.log("✔ Proposals generated");

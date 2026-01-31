@@ -1,114 +1,60 @@
-console.log("🔥 SERVER.JS VERSION: FACTORY-PERSIST-STATIC-SERVE");
-
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
 const PORT = process.env.PORT || 3000;
 
-// === DIRECTORIES ===
+const ADMIN_PATH = path.join(__dirname, "data", "admin", "admin-data.json");
 const PUBLIC_DIR = path.join(__dirname, "public");
-const DATA_DIR = path.join(__dirname, "data");
-const ADMIN_DIR = path.join(DATA_DIR, "admin");
-const ADMIN_DATA_PATH = path.join(ADMIN_DIR, "admin-data.json");
-const FACTORY_QUEUE_PATH = path.join(DATA_DIR, "factory-queue.json");
 
-// === SAFETY ===
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
-if (!fs.existsSync(ADMIN_DIR)) fs.mkdirSync(ADMIN_DIR);
-if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
-if (!fs.existsSync(ADMIN_DATA_PATH)) {
-  fs.writeFileSync(ADMIN_DATA_PATH, JSON.stringify({ businesses: [] }, null, 2));
-}
-if (!fs.existsSync(FACTORY_QUEUE_PATH)) {
-  fs.writeFileSync(FACTORY_QUEUE_PATH, JSON.stringify([], null, 2));
-}
-
-// === HELPERS ===
-function readJSON(p) {
-  return JSON.parse(fs.readFileSync(p, "utf8"));
-}
-
-function writeJSON(p, data) {
-  fs.writeFileSync(p, JSON.stringify(data, null, 2));
-}
-
-function send(res, code, type, body) {
+function send(res, code, body, type = "text/html") {
   res.writeHead(code, { "Content-Type": type });
   res.end(body);
 }
 
-// === SERVER ===
-http.createServer((req, res) => {
-  const url = decodeURIComponent(req.url.split("?")[0]);
+const server = http.createServer((req, res) => {
+  if (req.url === "/admin") {
+    const data = JSON.parse(fs.readFileSync(ADMIN_PATH, "utf8"));
+    const items = data.factory.queue.concat(data.factory.published);
 
-  // ---------- ADMIN API ----------
-  if (url === "/admin/data") {
-    return send(res, 200, "application/json", fs.readFileSync(ADMIN_DATA_PATH));
-  }
-
-  if (url.startsWith("/admin/action") && req.method === "POST") {
-    let body = "";
-    req.on("data", chunk => (body += chunk));
-    req.on("end", () => {
-      const { id, action } = JSON.parse(body);
-      const queue = readJSON(FACTORY_QUEUE_PATH);
-
-      const item = queue.find(q => q.id === id);
-      if (!item) return send(res, 404, "text/plain", "Item not found");
-
-      item.status = action;
-
-      // APPROVE → publish page
-      if (action === "approved") {
-        const toolDir = path.join(PUBLIC_DIR, item.url);
-        fs.mkdirSync(toolDir, { recursive: true });
-
-        fs.writeFileSync(
-          path.join(toolDir, "index.html"),
-          `<!DOCTYPE html>
-<html>
-<head>
-  <title>${item.title}</title>
-</head>
-<body>
-  <h1>${item.title}</h1>
-  <p>${item.description}</p>
-  <form method="POST" action="/api/merge">
-    <input type="file" name="files" multiple />
-    <button>Merge PDFs</button>
-  </form>
-</body>
-</html>`
-        );
-      }
-
-      writeJSON(FACTORY_QUEUE_PATH, queue);
-      send(res, 200, "application/json", JSON.stringify({ ok: true }));
-    });
+    send(res, 200, `
+      <h1>PDFMender Admin</h1>
+      ${items.map(i => `
+        <div>
+          <b>${i.title}</b> — ${i.status}
+          <form method="POST" action="/approve/${i.id}">
+            <button>Approve</button>
+          </form>
+        </div>
+      `).join("")}
+    `);
     return;
   }
 
-  // ---------- STATIC FILES ----------
-  let filePath = path.join(PUBLIC_DIR, url === "/" ? "/index.html" : url);
+  if (req.method === "POST" && req.url.startsWith("/approve/")) {
+    const id = req.url.split("/").pop();
+    const data = JSON.parse(fs.readFileSync(ADMIN_PATH, "utf8"));
 
-  if (fs.existsSync(filePath)) {
-    const stat = fs.statSync(filePath);
-
-    if (stat.isDirectory()) {
-      const indexFile = path.join(filePath, "index.html");
-      if (fs.existsSync(indexFile)) {
-        return fs.createReadStream(indexFile).pipe(res);
-      }
+    const item = data.factory.queue.find(x => x.id === id);
+    if (item) {
+      item.status = "approved";
+      data.factory.queue = data.factory.queue.filter(x => x.id !== id);
+      data.factory.published.push(item);
+      fs.writeFileSync(ADMIN_PATH, JSON.stringify(data, null, 2));
     }
 
-    if (stat.isFile()) {
-      return fs.createReadStream(filePath).pipe(res);
-    }
+    send(res, 302, "", "text/plain");
+    return;
   }
 
-  // ---------- 404 ----------
-  send(res, 404, "text/plain", "Not found");
-}).listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  const filePath = path.join(PUBLIC_DIR, req.url === "/" ? "index.html" : req.url);
+  if (fs.existsSync(filePath)) {
+    send(res, 200, fs.readFileSync(filePath));
+  } else {
+    send(res, 404, "Not found", "text/plain");
+  }
+});
+
+server.listen(PORT, () => {
+  console.log("🔥 SERVER RUNNING ON", PORT);
 });

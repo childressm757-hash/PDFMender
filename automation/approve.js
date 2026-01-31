@@ -1,48 +1,23 @@
 const fs = require("fs");
 const path = require("path");
 
-// ABSOLUTE, UNBREAKABLE PATH
-const ADMIN_DATA_PATH = path.join(
-  __dirname,
-  "..",
-  "data",
-  "admin",
-  "admin-data.json"
-);
+const ADMIN_PATH = path.join(__dirname, "..", "data", "admin", "admin-data.json");
 
-console.log("🔍 Looking for admin data at:", ADMIN_DATA_PATH);
+const data = JSON.parse(fs.readFileSync(ADMIN_PATH, "utf8"));
 
-if (!fs.existsSync(ADMIN_DATA_PATH)) {
-  console.error("❌ admin-data.json not found");
-  process.exit(1);
-}
+let approved = 0;
 
-const adminData = JSON.parse(
-  fs.readFileSync(ADMIN_DATA_PATH, "utf8")
-);
-
-// Example: approve all pending proposals
-let changed = false;
-
-adminData.factory = adminData.factory || {};
-adminData.factory.queue = adminData.factory.queue || [];
-
-adminData.factory.queue.forEach(item => {
+data.factory.queue = data.factory.queue.filter(item => {
   if (item.status === "pending") {
     item.status = "approved";
     item.approved_at = new Date().toISOString();
-    changed = true;
+    data.factory.published.push(item);
+    approved++;
+    return false;
   }
+  return true;
 });
 
-if (!changed) {
-  console.log("ℹ️ No pending items to approve.");
-  process.exit(0);
-}
+fs.writeFileSync(ADMIN_PATH, JSON.stringify(data, null, 2));
 
-fs.writeFileSync(
-  ADMIN_DATA_PATH,
-  JSON.stringify(adminData, null, 2)
-);
-
-console.log("✅ Approval complete. admin-data.json updated.");
+console.log(`✔ Approved ${approved} tools`);
