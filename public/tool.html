@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PDF Tool</title>
+</head>
+<body>
+  <h1 id="title"></h1>
+
+  <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="files" multiple required />
+    <button type="submit">Run</button>
+  </form>
+
+  <script>
+    const slug = location.pathname.split("/").pop();
+    fetch("/tools.json")
+      .then(r => r.json())
+      .then(tools => {
+        document.getElementById("title").innerText =
+          tools[slug]?.title || "PDF Tool";
+      });
+  </script>
+</body>
+</html>

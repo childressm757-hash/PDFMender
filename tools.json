@@ -1,0 +1,27 @@
+{
+  "merge-pdfs": {
+    "title": "Merge PDFs",
+    "engine": "merge"
+  },
+  "reorder-pdfs": {
+    "title": "Reorder PDFs",
+    "engine": "reorder"
+  },
+  "split-pdfs": {
+    "title": "Split PDFs",
+    "engine": "split"
+  },
+  "compress-pdfs": {
+    "title": "Compress PDFs",
+    "engine": "compress"
+  }
+}
+{
+  "id": "compress-pdfs-for-email",
+  "engine": "compress",
+  "constraints": {
+    "target": "email"
+  },
+  "ui": "compress",
+  "status": "approved"
+}
