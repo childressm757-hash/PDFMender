@@ -1,57 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Business Factory Admin</title>
+  <meta charset="UTF-8">
+  <title>PDFMender Admin</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-    }
-    h1 {
-      margin-bottom: 10px;
-    }
+    body { font-family: Arial; padding: 30px; }
+    h1 { margin-bottom: 10px; }
+    .section { margin-top: 30px; }
     .card {
       border: 1px solid #ccc;
-      padding: 15px;
-      margin: 10px 0;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    button {
+      margin-right: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>Business Factory Admin</h1>
-  <p>One console. Multiple businesses. Approvals + visibility.</p>
 
-  <div id="root">Loading…</div>
+<h1>PDFMender Admin</h1>
 
-  <script>
-    fetch("/admin-data.json")
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch admin data");
-        return res.json();
-      })
-      .then(data => {
-        const root = document.getElementById("root");
-        root.innerHTML = "";
+<div class="section">
+  <h2>Factory Output Queue</h2>
+  <div id="queue">Loading…</div>
+</div>
 
-        data.businesses.forEach(b => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <strong>${b.name}</strong><br/>
-            Type: ${b.type}<br/>
-            Engines: ${b.status.engines}<br/>
-            Automation: ${b.status.automation}<br/>
-            SEO: ${b.status.seo}<br/>
-            Errors: ${b.status.errors}
-          `;
-          root.appendChild(div);
-        });
-      })
-      .catch(err => {
-        document.getElementById("root").innerHTML =
-          "<b>Failed to load admin data.</b><br/>" + err.message;
-      });
-  </script>
+<script>
+fetch("/admin-data.json")
+  .then(r => r.json())
+  .then(data => {
+    const q = document.getElementById("queue");
+    q.innerHTML = "";
+
+    if (!data.factoryQueue || data.factoryQueue.length === 0) {
+      q.innerHTML = "<p>No pending tools.</p>";
+      return;
+    }
+
+    data.factoryQueue.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <strong>${item.name}</strong><br>
+        Category: ${item.category}<br>
+        Engine: ${item.baseEngine}<br>
+        Risk: ${item.risk}<br>
+        Status: ${item.status}<br><br>
+        <button>Approve</button>
+        <button>Reject</button>
+        <button>Defer</button>
+      `;
+      q.appendChild(div);
+    });
+  });
+</script>
+
 </body>
 </html>
