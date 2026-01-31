@@ -1,52 +1,57 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <title>Business Factory Admin</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 24px; max-width: 1000px; }
-    h1 { margin: 0 0 8px 0; }
-    .sub { color:#555; margin-bottom: 18px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .card { border: 1px solid #ddd; border-radius: 10px; padding: 14px 16px; }
-    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background:#f2f2f2; margin-left:8px;}
-    a.btn { display:inline-block; margin-top:10px; padding:8px 10px; border:1px solid #222; border-radius:8px; text-decoration:none; color:#222; }
-    .topbar { display:flex; justify-content:space-between; align-items:center; }
-    .muted { color:#666; font-size: 13px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .card {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div>
-      <h1>Business Factory Admin</h1>
-      <div class="sub">One console. Multiple businesses. Approvals + visibility.</div>
-    </div>
-    <div class="muted">/admin</div>
-  </div>
+  <h1>Business Factory Admin</h1>
+  <p>One console. Multiple businesses. Approvals + visibility.</p>
 
-  <div id="root"></div>
+  <div id="root">Loading…</div>
 
   <script>
-    async function load() {
-      const res = await fetch("/admin/api/businesses");
-      const data = await res.json();
-      const root = document.getElementById("root");
+    fetch("/admin-data.json")
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch admin data");
+        return res.json();
+      })
+      .then(data => {
+        const root = document.getElementById("root");
+        root.innerHTML = "";
 
-      const cards = data.businesses.map(b => `
-        <div class="card">
-          <div><strong>${b.name}</strong><span class="pill">${b.type}</span></div>
-          <div class="muted" style="margin-top:8px;">
-            Engines: <strong>${b.status.engines}</strong> · Automation: <strong>${b.status.automation}</strong> · Errors: <strong>${b.status.errors}</strong>
-          </div>
-          <a class="btn" href="/admin/business?id=${encodeURIComponent(b.id)}">Open</a>
-        </div>
-      `).join("");
-
-      root.innerHTML = `<div class="grid">${cards}</div>`;
-    }
-    load().catch(err => {
-      document.getElementById("root").innerHTML = "<p>Failed to load admin data.</p><pre>"+String(err)+"</pre>";
-    });
+        data.businesses.forEach(b => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <strong>${b.name}</strong><br/>
+            Type: ${b.type}<br/>
+            Engines: ${b.status.engines}<br/>
+            Automation: ${b.status.automation}<br/>
+            SEO: ${b.status.seo}<br/>
+            Errors: ${b.status.errors}
+          `;
+          root.appendChild(div);
+        });
+      })
+      .catch(err => {
+        document.getElementById("root").innerHTML =
+          "<b>Failed to load admin data.</b><br/>" + err.message;
+      });
   </script>
 </body>
 </html>

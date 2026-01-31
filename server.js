@@ -1,64 +1,25 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const { exec } = require("child_process");
 
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
-  // ========= HOME =========
+
+  // HOME
   if (req.url === "/") {
     res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(`
-      <h1>PDFMender Platform</h1>
-      <ul>
-        <li><a href="/merge">Merge PDFs</a></li>
-        <li><a href="/admin">Admin</a></li>
-      </ul>
-    `);
+    res.end(`<h1>PDFMender Platform</h1><a href="/admin">Admin</a>`);
     return;
   }
 
-  // ========= MERGE ENGINE =========
-  if (req.url === "/merge") {
-    exec("node engines/document/merge/runMerge.js", (err) => {
-      if (err) {
-        res.writeHead(500);
-        res.end(err.toString());
-        return;
-      }
-
-      const output = path.join(__dirname, "tmp", "merged.pdf");
-      fs.readFile(output, (err, pdf) => {
-        if (err) {
-          res.writeHead(500);
-          res.end("Merged PDF not found");
-          return;
-        }
-
-        res.writeHead(200, {
-          "Content-Type": "application/pdf",
-          "Content-Disposition": "attachment; filename=merged.pdf",
-        });
-        res.end(pdf);
-      });
-    });
-    return;
-  }
-
-  // ========= ADMIN UI =========
+  // ADMIN UI
   if (req.url === "/admin") {
-    const adminHtml = path.join(
-      __dirname,
-      "data",
-      "admin",
-      "index.html"
-    );
-
+    const adminHtml = path.join(__dirname, "data", "admin", "index.html");
     fs.readFile(adminHtml, "utf8", (err, html) => {
       if (err) {
-        res.writeHead(404);
-        res.end("Admin UI not found");
+        res.writeHead(500);
+        res.end("Admin UI missing");
         return;
       }
       res.writeHead(200, { "Content-Type": "text/html" });
@@ -67,19 +28,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // ========= ADMIN DATA =========
+  // ADMIN DATA
   if (req.url === "/admin-data.json") {
-    const adminData = path.join(
-      __dirname,
-      "data",
-      "admin",
-      "admin-data.json"
-    );
-
-    fs.readFile(adminData, "utf8", (err, json) => {
+    const jsonPath = path.join(__dirname, "data", "admin", "admin-data.json");
+    fs.readFile(jsonPath, "utf8", (err, json) => {
       if (err) {
         res.writeHead(500);
-        res.end(JSON.stringify({ error: "Admin data missing" }));
+        res.end(JSON.stringify({ error: "admin-data.json missing" }));
         return;
       }
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -88,26 +43,11 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // ========= STATIC FILES (OPTIONAL) =========
-  if (req.url.startsWith("/static/")) {
-    const filePath = path.join(__dirname, req.url);
-    fs.readFile(filePath, (err, file) => {
-      if (err) {
-        res.writeHead(404);
-        res.end("File not found");
-        return;
-      }
-      res.writeHead(200);
-      res.end(file);
-    });
-    return;
-  }
-
-  // ========= FALLBACK =========
+  // FALLBACK
   res.writeHead(404);
   res.end("Not found");
 });
 
 server.listen(PORT, () => {
-  console.log(`Platform server running on port ${PORT}`);
+  console.log("Server running on port " + PORT);
 });
