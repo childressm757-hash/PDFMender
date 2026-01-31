@@ -1,36 +1,16 @@
 {
   "tools": [
     {
-      "slug": "merge-pdfs-for-email-10mb",
-      "title": "Merge PDFs for Email",
-      "description": "Merge multiple PDFs into a single file optimized for email attachments.",
+      "id": "merge-pdfs-for-email-10mb",
+      "name": "Merge PDFs for Email",
       "engine": "merge",
-      "accept": ".pdf",
-      "maxFiles": 10
+      "enabled": true
     },
     {
-      "slug": "compress-pdfs-for-email",
-      "title": "Compress PDFs for Email",
-      "description": "Reduce PDF file size for email and sharing.",
+      "id": "compress-pdfs-for-email",
+      "name": "Compress PDFs for Email",
       "engine": "compress",
-      "accept": ".pdf",
-      "maxFiles": 1
-    },
-    {
-      "slug": "reorder-pdf-pages",
-      "title": "Reorder PDF Pages",
-      "description": "Reorder, remove, or rearrange pages in a PDF.",
-      "engine": "reorder",
-      "accept": ".pdf",
-      "maxFiles": 1
-    },
-    {
-      "slug": "split-pdf",
-      "title": "Split PDF",
-      "description": "Split a PDF into multiple files by page range.",
-      "engine": "split",
-      "accept": ".pdf",
-      "maxFiles": 1
+      "enabled": true
     }
   ]
 }
