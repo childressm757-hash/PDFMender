@@ -5,50 +5,21 @@ const { exec } = require("child_process");
 
 const PORT = process.env.PORT || 3000;
 
-// CHANGE THIS IF YOUR ADMIN FILES MOVE
-const ADMIN_DIR = path.join(__dirname, "data", "admin");
-
-function serveStaticFile(res, filePath, contentType) {
-  fs.readFile(filePath, (err, content) => {
-    if (err) {
-      res.writeHead(404);
-      res.end("Not found");
-      return;
-    }
-    res.writeHead(200, { "Content-Type": contentType });
-    res.end(content);
-  });
-}
-
 const server = http.createServer((req, res) => {
-  // ===== ADMIN ROUTES =====
-  if (req.url === "/admin" || req.url === "/admin/") {
-    const adminIndex = path.join(ADMIN_DIR, "index.html");
-    return serveStaticFile(res, adminIndex, "text/html");
+  // ========= HOME =========
+  if (req.url === "/") {
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(`
+      <h1>PDFMender Platform</h1>
+      <ul>
+        <li><a href="/merge">Merge PDFs</a></li>
+        <li><a href="/admin">Admin</a></li>
+      </ul>
+    `);
+    return;
   }
 
-  if (req.url.startsWith("/admin/")) {
-    const filePath = path.join(ADMIN_DIR, req.url.replace("/admin/", ""));
-    const ext = path.extname(filePath);
-
-    const contentTypes = {
-      ".html": "text/html",
-      ".js": "text/javascript",
-      ".css": "text/css",
-      ".json": "application/json",
-      ".png": "image/png",
-      ".jpg": "image/jpeg",
-      ".svg": "image/svg+xml"
-    };
-
-    return serveStaticFile(
-      res,
-      filePath,
-      contentTypes[ext] || "application/octet-stream"
-    );
-  }
-
-  // ===== MERGE ENGINE =====
+  // ========= MERGE ENGINE =========
   if (req.url === "/merge") {
     exec("node engines/document/merge/runMerge.js", (err) => {
       if (err) {
@@ -57,17 +28,82 @@ const server = http.createServer((req, res) => {
         return;
       }
 
-      const merged = path.join(__dirname, "tmp", "merged.pdf");
-      res.writeHead(200, {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": "attachment; filename=merged.pdf"
+      const output = path.join(__dirname, "tmp", "merged.pdf");
+      fs.readFile(output, (err, pdf) => {
+        if (err) {
+          res.writeHead(500);
+          res.end("Merged PDF not found");
+          return;
+        }
+
+        res.writeHead(200, {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": "attachment; filename=merged.pdf",
+        });
+        res.end(pdf);
       });
-      fs.createReadStream(merged).pipe(res);
     });
     return;
   }
 
-  // ===== DEFAULT =====
+  // ========= ADMIN UI =========
+  if (req.url === "/admin") {
+    const adminHtml = path.join(
+      __dirname,
+      "data",
+      "admin",
+      "index.html"
+    );
+
+    fs.readFile(adminHtml, "utf8", (err, html) => {
+      if (err) {
+        res.writeHead(404);
+        res.end("Admin UI not found");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(html);
+    });
+    return;
+  }
+
+  // ========= ADMIN DATA =========
+  if (req.url === "/admin-data.json") {
+    const adminData = path.join(
+      __dirname,
+      "data",
+      "admin",
+      "admin-data.json"
+    );
+
+    fs.readFile(adminData, "utf8", (err, json) => {
+      if (err) {
+        res.writeHead(500);
+        res.end(JSON.stringify({ error: "Admin data missing" }));
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(json);
+    });
+    return;
+  }
+
+  // ========= STATIC FILES (OPTIONAL) =========
+  if (req.url.startsWith("/static/")) {
+    const filePath = path.join(__dirname, req.url);
+    fs.readFile(filePath, (err, file) => {
+      if (err) {
+        res.writeHead(404);
+        res.end("File not found");
+        return;
+      }
+      res.writeHead(200);
+      res.end(file);
+    });
+    return;
+  }
+
+  // ========= FALLBACK =========
   res.writeHead(404);
   res.end("Not found");
 });
@@ -75,4 +111,3 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`Platform server running on port ${PORT}`);
 });
-
