@@ -3,70 +3,76 @@ const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 
+const PORT = process.env.PORT || 3000;
+
+// CHANGE THIS IF YOUR ADMIN FILES MOVE
+const ADMIN_DIR = path.join(__dirname, "data", "admin");
+
+function serveStaticFile(res, filePath, contentType) {
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      res.writeHead(404);
+      res.end("Not found");
+      return;
+    }
+    res.writeHead(200, { "Content-Type": contentType });
+    res.end(content);
+  });
+}
+
 const server = http.createServer((req, res) => {
-  // ROOT
-  if (req.url === "/") {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("PDFMender platform running.");
-    return;
+  // ===== ADMIN ROUTES =====
+  if (req.url === "/admin" || req.url === "/admin/") {
+    const adminIndex = path.join(ADMIN_DIR, "index.html");
+    return serveStaticFile(res, adminIndex, "text/html");
   }
 
-  // =======================
-  // MERGE ENGINE
-  // =======================
-  if (req.url === "/merge") {
-    const cmd =
-      "python engines/document/merge/merge.py tmp/a.pdf tmp/b.pdf tmp/merged.pdf";
+  if (req.url.startsWith("/admin/")) {
+    const filePath = path.join(ADMIN_DIR, req.url.replace("/admin/", ""));
+    const ext = path.extname(filePath);
 
-    exec(cmd, (err) => {
+    const contentTypes = {
+      ".html": "text/html",
+      ".js": "text/javascript",
+      ".css": "text/css",
+      ".json": "application/json",
+      ".png": "image/png",
+      ".jpg": "image/jpeg",
+      ".svg": "image/svg+xml"
+    };
+
+    return serveStaticFile(
+      res,
+      filePath,
+      contentTypes[ext] || "application/octet-stream"
+    );
+  }
+
+  // ===== MERGE ENGINE =====
+  if (req.url === "/merge") {
+    exec("node engines/document/merge/runMerge.js", (err) => {
       if (err) {
         res.writeHead(500);
         res.end(err.toString());
         return;
       }
 
-      const pdf = fs.readFileSync("tmp/merged.pdf");
+      const merged = path.join(__dirname, "tmp", "merged.pdf");
       res.writeHead(200, {
         "Content-Type": "application/pdf",
-        "Content-Disposition": 'attachment; filename="merged.pdf"',
+        "Content-Disposition": "attachment; filename=merged.pdf"
       });
-      res.end(pdf);
+      fs.createReadStream(merged).pipe(res);
     });
     return;
   }
 
-  // =======================
-  // PUBLIC ADMIN
-  // =======================
-  if (req.url === "/admin") {
-    const adminPath = path.join(
-      __dirname,
-      "engines",
-      "document",
-      "merge",
-      "data",
-      "admin",
-      "index.html"
-    );
-
-    if (!fs.existsSync(adminPath)) {
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end("Admin is live, but no UI has been registered yet.");
-      return;
-    }
-
-    const html = fs.readFileSync(adminPath);
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(html);
-    return;
-  }
-
-  // FALLBACK
+  // ===== DEFAULT =====
   res.writeHead(404);
-  res.end("Not Found");
+  res.end("Not found");
 });
 
-const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Platform server running on port ${PORT}`);
 });
+
