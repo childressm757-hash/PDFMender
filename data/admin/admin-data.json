@@ -26,8 +26,14 @@
         }
       ],
       "recent": [
-        { "ts": "2026-01-31 09:00", "event": "Engine connected: merge" },
-        { "ts": "2026-01-31 09:05", "event": "Generated draft SEO page: Merge PDFs online" }
+        {
+          "ts": "2026-01-31 09:00",
+          "event": "Engine connected: merge"
+        },
+        {
+          "ts": "2026-01-31 09:05",
+          "event": "Generated draft SEO page: Merge PDFs online"
+        }
       ]
     },
     {
@@ -47,8 +53,61 @@
       },
       "approvals": [],
       "recent": [
-        { "ts": "2026-01-31 09:10", "event": "Business instantiated (Factory)" }
+        {
+          "ts": "2026-01-31 09:10",
+          "event": "Business instantiated (Factory)"
+        }
       ]
+    }
+  ],
+  "factoryQueue": [
+    {
+      "id": "merge-email",
+      "name": "Merge PDFs for Email (≤10MB)",
+      "category": "SEO_VARIANT",
+      "baseEngine": "merge",
+      "risk": "LOW",
+      "status": "PENDING"
+    },
+    {
+      "id": "merge-court",
+      "name": "Merge PDFs for Court Filing",
+      "category": "SEO_VARIANT",
+      "baseEngine": "merge",
+      "risk": "LOW",
+      "status": "PENDING"
+    },
+    {
+      "id": "merge-order",
+      "name": "Merge PDFs Without Reordering",
+      "category": "SEO_VARIANT",
+      "baseEngine": "merge",
+      "risk": "LOW",
+      "status": "PENDING"
+    },
+    {
+      "id": "merge-bookmarks",
+      "name": "Merge PDFs Preserving Bookmarks",
+      "category": "SEO_VARIANT",
+      "baseEngine": "merge",
+      "risk": "LOW",
+      "status": "PENDING"
+    },
+    {
+      "id": "merge-scanned",
+      "name": "Merge PDFs for Scanned Documents",
+      "category": "SEO_VARIANT",
+      "baseEngine": "merge",
+      "risk": "LOW",
+      "status": "PENDING"
+    },
+    {
+      "id": "merge-size-threshold",
+      "name": "Merge PDFs by File Size Threshold",
+      "category": "NEW_TOOL",
+      "baseEngine": "merge",
+      "risk": "LOW",
+      "status": "PENDING"
     }
   ]
 }
