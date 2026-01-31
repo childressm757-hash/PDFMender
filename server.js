@@ -1,5 +1,5 @@
 // =====================================================
-// PDFMender Platform Server — FULL FILE
+// PDFMender Platform Server (Render Safe)
 // =====================================================
 
 console.log("🔥 SERVER BOOTED — PDFMender Factory Platform");
@@ -10,20 +10,20 @@ const path = require("path");
 const url = require("url");
 
 // -----------------------------------------------------
-// REQUIRED FOR RENDER
+// PORT (RENDER REQUIRED)
 // -----------------------------------------------------
 const PORT = process.env.PORT;
 if (!PORT) {
-  console.error("❌ Render did not provide PORT");
+  console.error("❌ PORT not provided by Render");
   process.exit(1);
 }
 
 // -----------------------------------------------------
-// ABSOLUTE PATHS (NO RELATIVE FILE ACCESS)
+// PATHS (ABSOLUTE ONLY)
 // -----------------------------------------------------
 const BASE = __dirname;
-
 const PUBLIC_DIR = path.join(BASE, "public");
+
 const ADMIN_HTML = path.join(PUBLIC_DIR, "admin.html");
 const ADMIN_JS = path.join(PUBLIC_DIR, "admin.js");
 
@@ -35,7 +35,7 @@ const ADMIN_DATA_PATH = path.join(
 );
 
 // -----------------------------------------------------
-// HELPERS
+// DATA HELPERS
 // -----------------------------------------------------
 function readAdminData() {
   if (!fs.existsSync(ADMIN_DATA_PATH)) {
@@ -49,6 +49,9 @@ function writeAdminData(data) {
   fs.writeFileSync(ADMIN_DATA_PATH, JSON.stringify(data, null, 2));
 }
 
+// -----------------------------------------------------
+// RESPONSE HELPERS
+// -----------------------------------------------------
 function send(res, status, body, type = "text/plain") {
   res.writeHead(status, { "Content-Type": type });
   res.end(body);
@@ -58,18 +61,33 @@ function sendJSON(res, obj) {
   send(res, 200, JSON.stringify(obj), "application/json");
 }
 
+// -----------------------------------------------------
+// SAFE FILE SERVER (NO EISDIR)
+// -----------------------------------------------------
 function serveFile(res, filePath) {
   if (!fs.existsSync(filePath)) {
-    send(res, 404, "Not Found");
-    return;
+    return send(res, 404, "Not Found");
   }
+
+  const stat = fs.statSync(filePath);
+
+  // 🔑 DIRECTORY HANDLING (THE FIX)
+  if (stat.isDirectory()) {
+    const indexFile = path.join(filePath, "index.html");
+    if (!fs.existsSync(indexFile)) {
+      return send(res, 404, "Directory has no index.html");
+    }
+    filePath = indexFile;
+  }
+
   const ext = path.extname(filePath);
   const types = {
     ".html": "text/html",
     ".js": "application/javascript",
     ".json": "application/json",
-    ".css": "text/css",
+    ".css": "text/css"
   };
+
   send(res, 200, fs.readFileSync(filePath), types[ext] || "text/plain");
 }
 
@@ -80,30 +98,18 @@ const server = http.createServer((req, res) => {
   const parsed = url.parse(req.url, true);
   const pathname = decodeURIComponent(parsed.pathname);
 
-  // -------------------------------
-  // ADMIN UI
-  // -------------------------------
-  if (pathname === "/admin") {
-    return serveFile(res, ADMIN_HTML);
-  }
+  // ---------------- ADMIN ----------------
+  if (pathname === "/admin") return serveFile(res, ADMIN_HTML);
+  if (pathname === "/admin.js") return serveFile(res, ADMIN_JS);
 
-  if (pathname === "/admin.js") {
-    return serveFile(res, ADMIN_JS);
-  }
-
-  // -------------------------------
-  // ADMIN DATA API
-  // -------------------------------
+  // ---------------- ADMIN API ----------------
   if (pathname === "/api/admin-data") {
     return sendJSON(res, readAdminData());
   }
 
-  // -------------------------------
-  // APPROVE / REJECT / DEFER
-  // -------------------------------
   if (pathname === "/api/approve" && req.method === "POST") {
     let body = "";
-    req.on("data", chunk => (body += chunk));
+    req.on("data", c => (body += c));
     req.on("end", () => {
       const { id, action } = JSON.parse(body);
       const data = readAdminData();
@@ -114,9 +120,9 @@ const server = http.createServer((req, res) => {
       item.status = action;
 
       if (action === "approved") {
-        // publish page
         const toolDir = path.join(PUBLIC_DIR, "tools", item.slug);
         fs.mkdirSync(toolDir, { recursive: true });
+
         fs.writeFileSync(
           path.join(toolDir, "index.html"),
           `<h1>${item.title}</h1><p>Tool is live.</p>`
@@ -125,7 +131,7 @@ const server = http.createServer((req, res) => {
         data.publishedPages.push({
           title: item.title,
           url: `/tools/${item.slug}/`,
-          publishedAt: new Date().toISOString(),
+          publishedAt: new Date().toISOString()
         });
       }
 
@@ -135,20 +141,12 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // -------------------------------
-  // TOOLS (PUBLIC)
-  // -------------------------------
+  // ---------------- TOOLS ----------------
   if (pathname.startsWith("/tools/")) {
-    const toolPath = path.join(PUBLIC_DIR, pathname);
-    if (fs.existsSync(toolPath) && fs.statSync(toolPath).isDirectory()) {
-      return serveFile(res, path.join(toolPath, "index.html"));
-    }
-    return send(res, 404, "Not Found");
+    return serveFile(res, path.join(PUBLIC_DIR, pathname));
   }
 
-  // -------------------------------
-  // STATIC FALLBACK
-  // -------------------------------
+  // ---------------- STATIC ----------------
   const staticPath = path.join(PUBLIC_DIR, pathname);
   if (staticPath.startsWith(PUBLIC_DIR) && fs.existsSync(staticPath)) {
     return serveFile(res, staticPath);
@@ -158,7 +156,7 @@ const server = http.createServer((req, res) => {
 });
 
 // -----------------------------------------------------
-// START SERVER (RENDER SAFE)
+// START
 // -----------------------------------------------------
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Server listening on 0.0.0.0:${PORT}`);
