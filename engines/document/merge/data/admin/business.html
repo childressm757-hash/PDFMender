@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Business</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; max-width: 1100px; }
+    a { color:#1a0dab; }
+    h1 { margin: 0 0 8px 0; }
+    .sub { color:#555; margin-bottom: 18px; }
+    .row { display:flex; gap: 16px; flex-wrap: wrap; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 14px 16px; flex:1; min-width: 280px; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background:#f2f2f2; margin-left:8px;}
+    table { width:100%; border-collapse: collapse; }
+    th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; font-size: 14px; }
+    .muted { color:#666; font-size: 13px; }
+    .btns button { margin-right: 8px; padding:6px 10px; border-radius:8px; border:1px solid #222; background:#fff; cursor:pointer; }
+    .btns button.approve { border-color:#0a7; }
+    .btns button.hold { border-color:#aa0; }
+    .btns button.reject { border-color:#a00; }
+  </style>
+</head>
+<body>
+  <div><a href="/admin">← Back to businesses</a></div>
+  <h1 id="title">Business</h1>
+  <div class="sub" id="subtitle"></div>
+
+  <div class="row">
+    <div class="card">
+      <h3>System Status</h3>
+      <div id="status" class="muted"></div>
+    </div>
+    <div class="card">
+      <h3>Quiet Metrics</h3>
+      <div id="metrics" class="muted"></div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:16px;">
+    <div class="card">
+      <h3>Needs Approval</h3>
+      <div id="approvals"></div>
+    </div>
+    <div class="card">
+      <h3>Recently Generated</h3>
+      <div id="recent"></div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+
+    async function load() {
+      const res = await fetch("/admin/api/business?id="+encodeURIComponent(id));
+      const data = await res.json();
+      const b = data.business;
+
+      document.getElementById("title").innerHTML = `${b.name}<span class="pill">${b.type}</span>`;
+      document.getElementById("subtitle").textContent = `Business ID: ${b.id}`;
+
+      document.getElementById("status").innerHTML = `
+        Engines: <strong>${b.status.engines}</strong><br/>
+        Automation: <strong>${b.status.automation}</strong><br/>
+        SEO: <strong>${b.status.seo}</strong><br/>
+        Errors: <strong>${b.status.errors}</strong>
+      `;
+
+      const metrics = Object.entries(b.metrics || {}).map(([k,v]) => `${k.replaceAll("_"," ")}: <strong>${v}</strong>`).join("<br/>");
+      document.getElementById("metrics").innerHTML = metrics || "<span class='muted'>No metrics yet.</span>";
+
+      const approvals = (b.approvals || []).filter(x => x.status === "needs_approval");
+      if (!approvals.length) {
+        document.getElementById("approvals").innerHTML = "<div class='muted'>Nothing needs approval.</div>";
+      } else {
+        document.getElementById("approvals").innerHTML = `
+          <table>
+            <thead><tr><th>Type</th><th>Title</th><th>Visibility</th><th>Tool</th><th>Action</th></tr></thead>
+            <tbody>
+              ${approvals.map(a => `
+                <tr>
+                  <td>${a.type}</td>
+                  <td>${a.title}</td>
+                  <td>${a.visibility}</td>
+                  <td>${a.tool}</td>
+                  <td class="btns">
+                    <button class="approve" onclick="act('${a.id}','approve')">Approve</button>
+                    <button class="hold" onclick="act('${a.id}','hold')">Hold</button>
+                    <button class="reject" onclick="act('${a.id}','reject')">Reject</button>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+          <div class="muted" style="margin-top:10px;">
+            (Actions are stubbed in v0.1 — they’ll update real storage once we connect events.)
+          </div>
+        `;
+      }
+
+      const recent = (b.recent || []);
+      document.getElementById("recent").innerHTML = recent.length
+        ? `<table><thead><tr><th>Time</th><th>Event</th></tr></thead><tbody>${recent.map(r => `<tr><td>${r.ts}</td><td>${r.event}</td></tr>`).join("")}</tbody></table>`
+        : "<div class='muted'>No recent activity yet.</div>";
+    }
+
+    async function act(itemId, action) {
+      alert(`v0.1 stub: ${action} → ${itemId}\n\nNext version will persist approvals.`);
+    }
+
+    load().catch(err => {
+      document.body.innerHTML += "<pre>"+String(err)+"</pre>";
+    });
+  </script>
+</body>
+</html>
