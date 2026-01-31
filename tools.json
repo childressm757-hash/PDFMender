@@ -20,10 +20,10 @@
       "enabled": true
     },
     {
-      "id": "compress-pdfs-for-email",
-      "name": "Compress PDFs for Email",
-      "engine": "compress",
-      "enabled": true
-    }
+  "id": "compress-pdfs-for-email",
+  "name": "Compress PDFs for Email",
+  "engine": "compress"
+}
+
   ]
 }
