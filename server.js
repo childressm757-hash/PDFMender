@@ -3,36 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 
-// =======================
-// BASIC ADMIN AUTH
-// =======================
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "changeme";
-
-function unauthorized(res) {
-  res.writeHead(401, {
-    "WWW-Authenticate": 'Basic realm="PDFMender Admin"',
-  });
-  res.end("Unauthorized");
-}
-
-function checkAuth(req, res) {
-  const auth = req.headers.authorization;
-  if (!auth) return unauthorized(res);
-
-  const encoded = auth.split(" ")[1];
-  const decoded = Buffer.from(encoded, "base64").toString();
-  const [user, pass] = decoded.split(":");
-
-  if (user !== ADMIN_USER || pass !== ADMIN_PASS) {
-    return unauthorized(res);
-  }
-  return true;
-}
-
-// =======================
-// SERVER
-// =======================
 const server = http.createServer((req, res) => {
   // ROOT
   if (req.url === "/") {
@@ -46,7 +16,7 @@ const server = http.createServer((req, res) => {
   // =======================
   if (req.url === "/merge") {
     const cmd =
-      'python engines/document/merge/merge.py tmp/a.pdf tmp/b.pdf tmp/merged.pdf';
+      "python engines/document/merge/merge.py tmp/a.pdf tmp/b.pdf tmp/merged.pdf";
 
     exec(cmd, (err) => {
       if (err) {
@@ -66,11 +36,9 @@ const server = http.createServer((req, res) => {
   }
 
   // =======================
-  // ADMIN PANEL
+  // PUBLIC ADMIN
   // =======================
   if (req.url === "/admin") {
-    if (!checkAuth(req, res)) return;
-
     const adminPath = path.join(
       __dirname,
       "engines",
@@ -82,8 +50,8 @@ const server = http.createServer((req, res) => {
     );
 
     if (!fs.existsSync(adminPath)) {
-      res.writeHead(500);
-      res.end("Admin UI not found.");
+      res.writeHead(200, { "Content-Type": "text/plain" });
+      res.end("Admin is live, but no UI has been registered yet.");
       return;
     }
 
@@ -93,16 +61,11 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // =======================
   // FALLBACK
-  // =======================
   res.writeHead(404);
   res.end("Not Found");
 });
 
-// =======================
-// START
-// =======================
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Platform server running on port ${PORT}`);
