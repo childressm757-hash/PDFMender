@@ -1,25 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PDF Tool</title>
+  <meta charset="UTF-8" />
+  <title id="page-title">PDF Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fafafa;
+      color: #222;
+      padding: 40px;
+      max-width: 720px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .desc {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+    .trust {
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 2rem;
+    }
+    .box {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    button {
+      margin-top: 12px;
+      padding: 8px 14px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1 id="title"></h1>
 
-  <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="files" multiple required />
-    <button type="submit">Run</button>
-  </form>
+  <h1 id="tool-name">PDF Tool</h1>
+  <div class="desc" id="tool-desc"></div>
+  <div class="trust">No uploads are stored. Files are processed securely and discarded automatically.</div>
 
-  <script>
-    const slug = location.pathname.split("/").pop();
-    fetch("/tools.json")
-      .then(r => r.json())
-      .then(tools => {
-        document.getElementById("title").innerText =
-          tools[slug]?.title || "PDF Tool";
-      });
-  </script>
+  <div class="box">
+    <form method="POST" enctype="multipart/form-data">
+      <input type="file" name="files" multiple required />
+      <br />
+      <button type="submit">Run Tool</button>
+    </form>
+  </div>
+
+<script>
+(async () => {
+  const toolId = location.pathname.split("/").filter(Boolean).pop();
+
+  const res = await fetch("/tools.json");
+  const data = await res.json();
+  const tool = data.tools.find(t => t.id === toolId);
+
+  if (!tool) {
+    document.getElementById("tool-name").innerText = "Tool not found";
+    document.getElementById("tool-desc").innerText = "This tool does not exist or is not enabled.";
+    return;
+  }
+
+  document.title = tool.name + " | PDFMender";
+  document.getElementById("tool-name").innerText = tool.name;
+
+  document.getElementById("tool-desc").innerText =
+    tool.engine === "merge" ? "Combine multiple PDFs into one optimized file."
+  : tool.engine === "reorder" ? "Reorder, rotate, or remove PDF pages easily."
+  : tool.engine === "split" ? "Split PDFs by page ranges or individual pages."
+  : tool.engine === "compress" ? "Reduce PDF size for email and sharing."
+  : "PDF processing tool.";
+})();
+</script>
+
 </body>
 </html>
