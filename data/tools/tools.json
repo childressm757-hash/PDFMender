@@ -1,0 +1,11 @@
+{
+  "tools": [
+    {
+      "id": "merge",
+      "name": "Merge PDFs",
+      "route": "/merge",
+      "status": "LIVE",
+      "type": "CORE"
+    }
+  ]
+}

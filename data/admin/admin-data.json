@@ -60,5 +60,8 @@
       "risk": "LOW",
       "status": "PENDING"
     }
-  ]
+  ],
+  "buildQueue": [],
+  "publishedPages": [],
+  "events": []
 }

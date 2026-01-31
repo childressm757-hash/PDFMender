@@ -4,57 +4,161 @@
   <meta charset="UTF-8">
   <title>PDFMender Admin</title>
   <style>
-    body { font-family: Arial; padding: 30px; }
-    h1 { margin-bottom: 10px; }
-    .section { margin-top: 30px; }
-    .card {
-      border: 1px solid #ccc;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    button {
-      margin-right: 10px;
-    }
+    body { font-family: Arial, sans-serif; padding: 28px; }
+    h1 { margin: 0 0 8px 0; }
+    .sub { color: #555; margin-bottom: 18px; }
+    .row { display:flex; gap:18px; align-items:flex-start; }
+    .col { flex: 1; }
+    .card { border:1px solid #ccc; padding:12px; margin:10px 0; }
+    .pill { display:inline-block; padding:2px 8px; border:1px solid #999; border-radius:999px; font-size:12px; margin-right:6px; }
+    .PENDING { background:#fff; }
+    .APPROVED { background:#e6ffe6; }
+    .REJECTED { background:#ffe6e6; }
+    .DEFERRED { background:#fff6d6; }
+    .BUILDING { background:#e6f0ff; }
+    .LIVE { background:#e6ffe6; }
+    button { margin-right:8px; }
+    code { background:#f4f4f4; padding:2px 6px; border-radius:4px; }
+    a { text-decoration:none; }
   </style>
 </head>
 <body>
+  <h1>PDFMender Admin</h1>
+  <div class="sub">Factory Output Queue → Approve/Reject/Defer. Approving SEO variants auto-publishes pages.</div>
 
-<h1>PDFMender Admin</h1>
+  <div class="row">
+    <div class="col">
+      <h2>Factory Output Queue</h2>
+      <div id="queue">Loading…</div>
+    </div>
 
-<div class="section">
-  <h2>Factory Output Queue</h2>
-  <div id="queue">Loading…</div>
-</div>
+    <div class="col">
+      <h2>Build Queue</h2>
+      <div id="build">Loading…</div>
+
+      <h2 style="margin-top:18px;">Live Tools</h2>
+      <div id="tools">Loading…</div>
+
+      <h2 style="margin-top:18px;">Published Pages</h2>
+      <div id="pages">Loading…</div>
+    </div>
+  </div>
 
 <script>
-fetch("/admin-data.json")
-  .then(r => r.json())
-  .then(data => {
-    const q = document.getElementById("queue");
-    q.innerHTML = "";
+async function fetchJSON(url) {
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(url + " failed: " + res.status);
+  return res.json();
+}
 
-    if (!data.factoryQueue || data.factoryQueue.length === 0) {
-      q.innerHTML = "<p>No pending tools.</p>";
-      return;
-    }
-
-    data.factoryQueue.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        <strong>${item.name}</strong><br>
-        Category: ${item.category}<br>
-        Engine: ${item.baseEngine}<br>
-        Risk: ${item.risk}<br>
-        Status: ${item.status}<br><br>
-        <button>Approve</button>
-        <button>Reject</button>
-        <button>Defer</button>
-      `;
-      q.appendChild(div);
-    });
+async function act(id, action) {
+  await fetch("/admin/action", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, action })
   });
-</script>
+  await render();
+}
 
+function renderQueue(items) {
+  const el = document.getElementById("queue");
+  el.innerHTML = "";
+  if (!items || items.length === 0) {
+    el.innerHTML = "<div class='card'>No pending items.</div>";
+    return;
+  }
+  items.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "card " + item.status;
+    const url = item.previewUrl ? `<br/>URL: <a href="${item.previewUrl}" target="_blank">${item.previewUrl}</a>` : "";
+    div.innerHTML = `
+      <div>
+        <span class="pill">${item.category}</span>
+        <span class="pill">${item.risk}</span>
+        <span class="pill">${item.status}</span>
+      </div>
+      <div style="margin-top:6px;"><strong>${item.name}</strong></div>
+      <div style="margin-top:6px;">Base engine: <code>${item.baseEngine}</code>${url}</div>
+      <div style="margin-top:10px;">
+        <button onclick="act('${item.id}','approve')">Approve</button>
+        <button onclick="act('${item.id}','reject')">Reject</button>
+        <button onclick="act('${item.id}','defer')">Defer</button>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function renderBuildQueue(items) {
+  const el = document.getElementById("build");
+  el.innerHTML = "";
+  if (!items || items.length === 0) {
+    el.innerHTML = "<div class='card'>Build queue empty.</div>";
+    return;
+  }
+  items.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "card " + item.status;
+    div.innerHTML = `
+      <div><span class="pill">${item.status}</span> <strong>${item.name}</strong></div>
+      <div style="margin-top:6px;">Route: <code>${item.route || "(pending)"}</code></div>
+      ${item.liveUrl ? `<div style="margin-top:6px;">Live: <a href="${item.liveUrl}" target="_blank">${item.liveUrl}</a></div>` : ""}
+      ${item.lastError ? `<div style="margin-top:6px;color:#b00;"><strong>Error:</strong> ${item.lastError}</div>` : ""}
+    `;
+    el.appendChild(div);
+  });
+}
+
+function renderTools(tools) {
+  const el = document.getElementById("tools");
+  el.innerHTML = "";
+  if (!tools || tools.length === 0) {
+    el.innerHTML = "<div class='card'>No tools registered.</div>";
+    return;
+  }
+  tools.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "card " + t.status;
+    div.innerHTML = `
+      <div><span class="pill">${t.status}</span> <strong>${t.name}</strong></div>
+      <div style="margin-top:6px;">Route: <a href="${t.route}" target="_blank"><code>${t.route}</code></a></div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function renderPages(pages) {
+  const el = document.getElementById("pages");
+  el.innerHTML = "";
+  if (!pages || pages.length === 0) {
+    el.innerHTML = "<div class='card'>No pages published yet.</div>";
+    return;
+  }
+  pages.slice().reverse().forEach(p => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <div><strong>${p.title}</strong></div>
+      <div style="margin-top:6px;"><a href="${p.url}" target="_blank">${p.url}</a></div>
+      <div style="margin-top:6px;color:#666;">${p.publishedAt}</div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+async function render() {
+  const admin = await fetchJSON("/admin-data.json");
+  const tools = await fetchJSON("/tools.json");
+
+  renderQueue(admin.factoryQueue || []);
+  renderBuildQueue(admin.buildQueue || []);
+  renderPages(admin.publishedPages || []);
+  renderTools((tools.tools || []).filter(t => t.status === "LIVE"));
+}
+
+render().catch(e => {
+  document.body.innerHTML = "<h2>Admin failed</h2><pre>" + e.message + "</pre>";
+});
+</script>
 </body>
 </html>
