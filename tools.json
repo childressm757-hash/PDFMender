@@ -1,27 +1,29 @@
 {
-  "merge-pdfs": {
-    "title": "Merge PDFs",
-    "engine": "merge"
-  },
-  "reorder-pdfs": {
-    "title": "Reorder PDFs",
-    "engine": "reorder"
-  },
-  "split-pdfs": {
-    "title": "Split PDFs",
-    "engine": "split"
-  },
-  "compress-pdfs": {
-    "title": "Compress PDFs",
-    "engine": "compress"
-  }
-}
-{
-  "id": "compress-pdfs-for-email",
-  "engine": "compress",
-  "constraints": {
-    "target": "email"
-  },
-  "ui": "compress",
-  "status": "approved"
+  "tools": [
+    {
+      "id": "merge-pdfs-for-email-10mb",
+      "name": "Merge PDFs for Email (≤10MB)",
+      "engine": "merge",
+      "maxSizeMB": 10,
+      "enabled": true
+    },
+    {
+      "id": "reorder-pdfs",
+      "name": "Reorder PDF Pages",
+      "engine": "reorder",
+      "enabled": true
+    },
+    {
+      "id": "split-pdfs",
+      "name": "Split PDFs",
+      "engine": "split",
+      "enabled": true
+    },
+    {
+      "id": "compress-pdfs-for-email",
+      "name": "Compress PDFs for Email",
+      "engine": "compress",
+      "enabled": true
+    }
+  ]
 }
