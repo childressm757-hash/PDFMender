@@ -19,14 +19,14 @@ function loadTools() {
 
 http.createServer((req, res) => {
 
-  // Health check (required for Render)
+  // ✅ HEALTH CHECK (FOR RENDER / MONITORS / COURTS)
   if (req.method === "GET" && req.url === "/health") {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("ok");
     return;
   }
 
-  // Serve tools.json for the UI to read
+  // Serve tools.json for the UI
   if (req.method === "GET" && req.url === "/tools.json") {
     const { parsed } = loadTools();
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -37,13 +37,15 @@ http.createServer((req, res) => {
   // Universal tool page
   if (req.method === "GET" && req.url.startsWith("/tools/")) {
     res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(fs.readFileSync(path.join(__dirname, "public", "tool.html")));
+    res.end(
+      fs.readFileSync(path.join(__dirname, "public", "tool.html"))
+    );
     return;
   }
 
   // Run tool
   if (req.method === "POST" && req.url.startsWith("/tools/")) {
-    const slug = req.url.split("/").filter(Boolean).pop(); // handles trailing slash
+    const slug = req.url.split("/").filter(Boolean).pop();
     const { list } = loadTools();
     const tool = list.find(t => t.id === slug && t.enabled);
 
@@ -54,7 +56,6 @@ http.createServer((req, res) => {
     }
 
     const form = new multiparty.Form({ uploadDir: TMP_DIR });
-
     form.parse(req, (err, fields, files) => {
       if (err) {
         res.writeHead(500, { "Content-Type": "text/plain" });
@@ -65,7 +66,7 @@ http.createServer((req, res) => {
       const uploaded = (files.files || []).map(f => f.path);
 
       try {
-        // Enforce correct file count for honesty
+        // Enforce correct file count
         if (tool.engine === "merge" && uploaded.length < 2) {
           res.writeHead(400, { "Content-Type": "text/plain" });
           res.end("Merge requires at least 2 PDFs.");
