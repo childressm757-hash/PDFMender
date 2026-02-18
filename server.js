@@ -7,7 +7,10 @@ const kernel = require("./kernel/document");
 
 const PORT = process.env.PORT || 10000;
 const TMP_DIR = path.join(__dirname, "tmp");
-if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR, { recursive: true });
+
+if (!fs.existsSync(TMP_DIR)) {
+  fs.mkdirSync(TMP_DIR, { recursive: true });
+}
 
 function loadTools() {
   const toolsPath = path.join(__dirname, "tools.json");
@@ -19,14 +22,14 @@ function loadTools() {
 
 http.createServer((req, res) => {
 
-  // ✅ HEALTH CHECK (FOR RENDER / MONITORS / COURTS)
+  // ✅ HEALTH CHECK — MUST COME FIRST
   if (req.method === "GET" && req.url === "/health") {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("ok");
     return;
   }
 
-  // Serve tools.json for the UI
+  // Serve tools.json
   if (req.method === "GET" && req.url === "/tools.json") {
     const { parsed } = loadTools();
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -56,6 +59,7 @@ http.createServer((req, res) => {
     }
 
     const form = new multiparty.Form({ uploadDir: TMP_DIR });
+
     form.parse(req, (err, fields, files) => {
       if (err) {
         res.writeHead(500, { "Content-Type": "text/plain" });
@@ -66,7 +70,6 @@ http.createServer((req, res) => {
       const uploaded = (files.files || []).map(f => f.path);
 
       try {
-        // Enforce correct file count
         if (tool.engine === "merge" && uploaded.length < 2) {
           res.writeHead(400, { "Content-Type": "text/plain" });
           res.end("Merge requires at least 2 PDFs.");
