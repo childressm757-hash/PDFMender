@@ -22,14 +22,49 @@ function loadTools() {
 
 http.createServer((req, res) => {
 
-  // ✅ HEALTH CHECK — MUST COME FIRST
+  // =========================
+  // HEALTH CHECK
+  // =========================
   if (req.method === "GET" && req.url === "/health") {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("ok");
     return;
   }
 
-  // Serve tools.json
+  // =========================
+  // STATIC FILES (public/)
+  // =========================
+  if (req.method === "GET") {
+    const filePath = path.join(__dirname, "public", req.url);
+
+    // Prevent directory traversal
+    if (filePath.startsWith(path.join(__dirname, "public")) &&
+        fs.existsSync(filePath) &&
+        fs.statSync(filePath).isFile()) {
+
+      const ext = path.extname(filePath).toLowerCase();
+      const contentTypes = {
+        ".html": "text/html",
+        ".css": "text/css",
+        ".js": "application/javascript",
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".svg": "image/svg+xml"
+      };
+
+      res.writeHead(200, {
+        "Content-Type": contentTypes[ext] || "application/octet-stream"
+      });
+
+      fs.createReadStream(filePath).pipe(res);
+      return;
+    }
+  }
+
+  // =========================
+  // SERVE tools.json
+  // =========================
   if (req.method === "GET" && req.url === "/tools.json") {
     const { parsed } = loadTools();
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -37,7 +72,9 @@ http.createServer((req, res) => {
     return;
   }
 
-  // Universal tool page
+  // =========================
+  // UNIVERSAL TOOL PAGE
+  // =========================
   if (req.method === "GET" && req.url.startsWith("/tools/")) {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(
@@ -46,8 +83,11 @@ http.createServer((req, res) => {
     return;
   }
 
-  // Run tool
+  // =========================
+  // RUN TOOL
+  // =========================
   if (req.method === "POST" && req.url.startsWith("/tools/")) {
+
     const slug = req.url.split("/").filter(Boolean).pop();
     const { list } = loadTools();
     const tool = list.find(t => t.id === slug && t.enabled);
@@ -61,6 +101,7 @@ http.createServer((req, res) => {
     const form = new multiparty.Form({ uploadDir: TMP_DIR });
 
     form.parse(req, (err, fields, files) => {
+
       if (err) {
         res.writeHead(500, { "Content-Type": "text/plain" });
         res.end("Upload parse error: " + err.toString());
@@ -70,18 +111,6 @@ http.createServer((req, res) => {
       const uploaded = (files.files || []).map(f => f.path);
 
       try {
-        if (tool.engine === "merge" && uploaded.length < 2) {
-          res.writeHead(400, { "Content-Type": "text/plain" });
-          res.end("Merge requires at least 2 PDFs.");
-          return;
-        }
-
-        if (tool.engine === "compress" && uploaded.length !== 1) {
-          res.writeHead(400, { "Content-Type": "text/plain" });
-          res.end("Compress requires exactly 1 PDF.");
-          return;
-        }
-
         const outputPath = kernel[tool.engine](uploaded);
 
         res.writeHead(200, {
@@ -100,7 +129,9 @@ http.createServer((req, res) => {
     return;
   }
 
-  // Root
+  // =========================
+  // ROOT / FALLBACK
+  // =========================
   res.writeHead(200, { "Content-Type": "text/plain" });
   res.end("PDFMender running");
 
