@@ -11,6 +11,12 @@
       "name": "Compress PDFs for Email",
       "engine": "compress",
       "enabled": true
+    },
+    {
+      "id": "flatten",
+      "name": "Flatten Interactive / XFA PDF",
+      "engine": "flatten",
+      "enabled": true
     }
   ]
 }
