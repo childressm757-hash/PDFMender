@@ -7,10 +7,7 @@ const kernel = require("./kernel/document");
 
 const PORT = process.env.PORT || 10000;
 const TMP_DIR = path.join(__dirname, "tmp");
-
-if (!fs.existsSync(TMP_DIR)) {
-  fs.mkdirSync(TMP_DIR, { recursive: true });
-}
+if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR, { recursive: true });
 
 function loadTools() {
   const toolsPath = path.join(__dirname, "tools.json");
@@ -22,18 +19,14 @@ function loadTools() {
 
 http.createServer((req, res) => {
 
-  // ===============================
-  // HEALTH CHECK (NEW)
-  // ===============================
+  // Health check (required for Render)
   if (req.method === "GET" && req.url === "/health") {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("ok");
     return;
   }
 
-  // ===============================
-  // Serve tools.json for UI
-  // ===============================
+  // Serve tools.json for the UI to read
   if (req.method === "GET" && req.url === "/tools.json") {
     const { parsed } = loadTools();
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -41,22 +34,14 @@ http.createServer((req, res) => {
     return;
   }
 
-  // ===============================
   // Universal tool page
-  // ===============================
   if (req.method === "GET" && req.url.startsWith("/tools/")) {
     res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(
-      fs.readFileSync(
-        path.join(__dirname, "public", "tool.html")
-      )
-    );
+    res.end(fs.readFileSync(path.join(__dirname, "public", "tool.html")));
     return;
   }
 
-  // ===============================
   // Run tool
-  // ===============================
   if (req.method === "POST" && req.url.startsWith("/tools/")) {
     const slug = req.url.split("/").filter(Boolean).pop(); // handles trailing slash
     const { list } = loadTools();
@@ -80,7 +65,7 @@ http.createServer((req, res) => {
       const uploaded = (files.files || []).map(f => f.path);
 
       try {
-        // Enforce correct file count
+        // Enforce correct file count for honesty
         if (tool.engine === "merge" && uploaded.length < 2) {
           res.writeHead(400, { "Content-Type": "text/plain" });
           res.end("Merge requires at least 2 PDFs.");
@@ -111,9 +96,7 @@ http.createServer((req, res) => {
     return;
   }
 
-  // ===============================
-  // Root / Fallback
-  // ===============================
+  // Root
   res.writeHead(200, { "Content-Type": "text/plain" });
   res.end("PDFMender running");
 
