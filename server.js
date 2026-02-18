@@ -25,6 +25,10 @@ http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(parsed));
     return;
+    get("/health", (req, res) => {
+  res.end("ok");
+});
+
   }
 
   // Universal tool page
@@ -32,6 +36,10 @@ http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(fs.readFileSync(path.join(__dirname, "public", "tool.html")));
     return;
+    get("/health", (req, res) => {
+  res.end("ok");
+});
+
   }
 
   // Run tool
