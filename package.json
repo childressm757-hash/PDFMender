@@ -6,20 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "build": "echo \"no build\"",
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/childressm757-hash/PDFMender.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/childressm757-hash/PDFMender/issues"
-  },
-  "homepage": "https://github.com/childressm757-hash/PDFMender#readme",
   "dependencies": {
     "multiparty": "^4.2.3"
   }
