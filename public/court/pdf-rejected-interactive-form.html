@@ -2,9 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Fix Court-Rejected PDF — PDFMender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Google Analytics -->
+  <!-- SEO -->
+  <title>PDF Rejected by Court? Fix Interactive or XFA Forms | PDFMender</title>
+  <meta name="description" content="Fix court-rejected PDFs caused by interactive or XFA form data. This tool flattens PDFs into static, court-acceptable files for same-day filing." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://pdfmender.com/court/pdf-rejected-interactive-form.html" />
+
+  <!-- Open Graph (optional but clean/professional) -->
+  <meta property="og:title" content="PDF Rejected by Court? Fix Interactive or XFA Forms | PDFMender" />
+  <meta property="og:description" content="Flatten interactive/XFA PDFs into static, court-acceptable files for same-day filing." />
+  <meta property="og:url" content="https://pdfmender.com/court/pdf-rejected-interactive-form.html" />
+  <meta property="og:type" content="website" />
+
+  <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ETYW9NNRDN"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -13,114 +25,464 @@
     gtag('config', 'G-ETYW9NNRDN');
   </script>
 
+  <!-- Minimal structured data (helps Google understand the page) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "PDF Rejected by Court: Interactive or XFA Form Detected",
+    "url": "https://pdfmender.com/court/pdf-rejected-interactive-form.html",
+    "description": "Fix court-rejected PDFs caused by interactive or XFA form data by flattening them into static, court-acceptable files."
+  }
+  </script>
+
   <style>
+    :root{
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: rgba(17, 24, 39, 0.10);
+      --shadow: 0 18px 40px rgba(17, 24, 39, 0.10);
+      --accent: #111827;
+      --accentSoft: rgba(17, 24, 39, 0.06);
+      --focus: rgba(59, 130, 246, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f6f7f8;
-      padding: 40px;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% 8%, rgba(17,24,39,0.06), transparent 60%),
+        radial-gradient(700px 350px at 85% 18%, rgba(17,24,39,0.05), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.45;
     }
-    .card {
-      max-width: 640px;
-      margin: auto;
-      background: white;
-      padding: 32px;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
     }
-    h1 { margin-top: 0; }
-    .upload-box {
-      border: 2px dashed #ccc;
-      padding: 24px;
-      text-align: center;
-      margin: 24px 0;
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
     }
-    button {
-      background: black;
-      color: white;
-      border: none;
-      padding: 14px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    .top-nav {
-      margin-bottom: 20px;
-    }
-    .top-nav a {
-      font-size: 14px;
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
       text-decoration: none;
-      color: #333;
+      color: var(--text);
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
-    .note {
-      color: #666;
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(17,24,39,0.18), rgba(17,24,39,0.05));
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 10px 22px rgba(17,24,39,0.08);
+      font-size: 14px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .link {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+    }
+    .link:hover { background: var(--accentSoft); }
+    .link:focus { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .headline {
+      margin: 0 0 10px;
+      font-size: 30px;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .subhead {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 70ch;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    @media (min-width: 860px) {
+      .grid {
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 22px;
+        align-items: start;
+      }
+    }
+
+    h2 {
+      margin: 18px 0 8px;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin: 0 0 10px;
+      color: #111827;
+    }
+
+    .muted {
+      color: var(--muted);
       font-size: 13px;
-      margin-top: 16px;
     }
-    footer {
-      margin-top: 32px;
-      font-size: 12px;
-      color: #666;
-      text-align: center;
+
+    /* Form area */
+    .formbox {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(17,24,39,0.03), transparent);
+    }
+
+    .upload {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 2px dashed rgba(17,24,39,0.18);
+      border-radius: 12px;
+      background: rgba(17,24,39,0.02);
+    }
+
+    .upload label {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .conversion-line {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .button-row {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid rgba(17,24,39,0.12);
+      background: var(--accent);
+      color: white;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      border-radius: 12px;
+      letter-spacing: -0.01em;
+      box-shadow: 0 14px 22px rgba(17,24,39,0.18);
+    }
+    button:hover { filter: brightness(1.04); }
+    button:active { transform: translateY(1px); }
+    button:focus { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    .fineprint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    /* Right side: trust panel */
+    .trust {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .trust h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .trust ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .trust li { margin: 6px 0; }
+
+    .contact {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .contact a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .contact a:hover { text-decoration: underline; }
+
+    /* Footer trust lines (your requested phrases) */
+    .footer {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      gap: 8px;
+    }
+
+    .trustline {
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .legal-disclaimer {
+      font-size: 12.5px;
+      color: var(--muted);
     }
   </style>
 </head>
+
 <body>
+  <div class="wrap">
+    <!-- Top bar with Home + Contact -->
+    <div class="topbar">
+      <a class="brand" href="/" aria-label="Go to PDFMender home">
+        <span class="brand-mark">PM</span>
+        <span>PDFMender</span>
+      </a>
 
-  <div class="card">
-
-    <div class="top-nav">
-      ← <a href="/" onclick="gtag('event','return_home',{event_category:'Navigation'})">Home</a>
-    </div>
-
-    <h1>PDF Rejected by Court</h1>
-
-    <p>
-      Courts frequently reject PDFs that contain interactive form fields or
-      XFA form data. These elements must be flattened before submission.
-    </p>
-
-    <p>
-      This tool automatically removes interactive elements and produces a
-      static, court-acceptable PDF.
-    </p>
-
-    <form
-      action="/api/flatten"
-      method="POST"
-      enctype="multipart/form-data"
-      onsubmit="trackFixSubmit()"
-    >
-      <div class="upload-box">
-        <input type="file" name="file" accept="application/pdf" required />
+      <div class="top-actions">
+        <a class="link" href="/" id="homeLinkTop">Home</a>
+        <a class="link" href="mailto:support@pdfmender.com" id="contactLinkTop">Contact</a>
       </div>
-
-      <button type="submit">
-        Fix PDF and Download Court-Ready File
-      </button>
-    </form>
-
-    <div class="note">
-      Files are processed automatically and are not stored after processing.
     </div>
 
-    <footer>
-      PDFMender is a software utility and does not provide legal advice,
-      legal review, or legal representation.<br><br>
-      Support:
-      <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
-    </footer>
+    <main class="card" role="main">
+      <!-- Your requested copy, clean and structured -->
+      <h1 class="headline">PDF Rejected by Court: Interactive or XFA Form Detected</h1>
+      <p class="subhead">
+        Your court filing was rejected because the PDF contains interactive or XFA form data.
+        Most courts require PDFs to be fully flattened before submission.
+      </p>
+
+      <div class="grid">
+        <!-- Left column: explanation + form -->
+        <section>
+          <h2>Why this happens</h2>
+          <p>
+            This usually occurs when a PDF is created from Word, Adobe forms, or court-provided templates
+            that retain active form fields—even after exporting to PDF.
+          </p>
+
+          <h2>What this tool does</h2>
+          <p>
+            This tool removes all interactive elements and converts your document into a static,
+            court-acceptable PDF.
+          </p>
+
+          <div class="formbox" aria-label="PDF flattening tool">
+            <form
+              id="flattenForm"
+              action="/api/flatten"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="upload">
+                <label for="pdfFile">Choose your PDF</label>
+                <input
+                  id="pdfFile"
+                  type="file"
+                  name="file"
+                  accept="application/pdf"
+                  required
+                />
+                <div class="muted">
+                  Tip: If your PDF was rejected for “interactive fields” or “XFA,” this is the right fix.
+                </div>
+              </div>
+
+              <!-- Your requested conversion sentence -->
+              <div class="conversion-line">
+                This fixes the most common court rejection: interactive or XFA forms.
+              </div>
+
+              <div class="button-row">
+                <button type="submit" id="fixBtn">
+                  Fix PDF and Download Court-Ready File
+                </button>
+              </div>
+
+              <!-- Your requested trust signal -->
+              <div class="fineprint">
+                Files are processed automatically and deleted after processing.
+                <br />
+                Your download will include the original filename, “Court-Approved,” and today’s date.
+              </div>
+            </form>
+
+            <!-- Footer trust lines + legal disclaimer (requested) -->
+            <div class="footer">
+              <div class="trustline">
+                Used by attorneys and legal staff to fix same-day court filing rejections.
+              </div>
+              <div class="legal-disclaimer">
+                Not legal advice. PDFMender provides technical document processing only.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right column: quiet professionalism / trust -->
+        <aside class="trust" aria-label="Trust and privacy information">
+          <h3>Quick checks before you re-file</h3>
+          <ul>
+            <li>Confirm the flattened PDF opens correctly after download.</li>
+            <li>Spot-check signatures, exhibits, and page count.</li>
+            <li>If your court portal validates PDFs, re-upload immediately.</li>
+          </ul>
+
+          <div class="contact">
+            Need help? Email <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
+          </div>
+        </aside>
+      </div>
+    </main>
   </div>
 
   <script>
-    function trackFixSubmit() {
-      if (typeof gtag === "function") {
-        gtag("event", "pdf_fix_submitted", {
-          event_category: "PDF Tool",
-          event_label: "Court PDF Flatten"
+    // ---------- Analytics event wiring (no backend changes needed) ----------
+
+    // Track: visitor clicks "Home" (optional)
+    (function () {
+      var homeLink = document.getElementById("homeLinkTop");
+      if (homeLink) {
+        homeLink.addEventListener("click", function () {
+          if (typeof gtag === "function") {
+            gtag("event", "nav_home_click", {
+              event_category: "Navigation",
+              event_label: "Top Home Link"
+            });
+          }
         });
       }
-    }
-  </script>
+    })();
 
+    // Track: visitor clicks "Contact" (optional)
+    (function () {
+      var contactLink = document.getElementById("contactLinkTop");
+      if (contactLink) {
+        contactLink.addEventListener("click", function () {
+          if (typeof gtag === "function") {
+            gtag("event", "contact_click", {
+              event_category: "Contact",
+              event_label: "mailto:support@pdfmender.com"
+            });
+          }
+        });
+      }
+    })();
+
+    // Track: visitor selects a file (optional)
+    (function () {
+      var fileInput = document.getElementById("pdfFile");
+      if (fileInput) {
+        fileInput.addEventListener("change", function () {
+          if (fileInput.files && fileInput.files.length > 0 && typeof gtag === "function") {
+            gtag("event", "pdf_file_selected", {
+              event_category: "PDF Tool",
+              event_label: "Court Flatten - File Selected"
+            });
+          }
+        });
+      }
+    })();
+
+    // Track: form submit (this is your practical "someone clicked fix" signal)
+    (function () {
+      var form = document.getElementById("flattenForm");
+      var btn = document.getElementById("fixBtn");
+
+      if (!form) return;
+
+      form.addEventListener("submit", function () {
+        // Fire analytics first
+        if (typeof gtag === "function") {
+          gtag("event", "pdf_fix_submit", {
+            event_category: "PDF Tool",
+            event_label: "Court Flatten - Submit",
+            value: 1
+          });
+        }
+
+        // Light UX: prevent double clicks
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = "Processing…";
+        }
+
+        // IMPORTANT: do NOT prevent default.
+        // Let the browser submit the form so the download flow works as-is.
+      });
+    })();
+
+    // Optional: keep your existing success event name visible in GA,
+    // but without backend changes we cannot reliably confirm "download succeeded"
+    // because the response is a file download, not a page view.
+    // If your server later redirects to /court/success, we can fire a true success event there.
+  </script>
 </body>
 </html>
