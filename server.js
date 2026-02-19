@@ -3,11 +3,12 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { execFile } = require("child_process");
+
 const app = express();
-const upload = multer({ dest: "tmp/" });
+const upload = multer({ dest: path.join(__dirname, "tmp") });
 
 /* -----------------------------
-   STATIC FILES (CRITICAL)
+   STATIC FILES
 ----------------------------- */
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -18,7 +19,7 @@ app.post("/api/flatten", upload.single("file"), async (req, res) => {
   try {
     const inputPath = req.file.path;
     const outputName = `flattened-${Date.now()}.pdf`;
-    const outputPath = path.join("tmp", outputName);
+    const outputPath = path.join(__dirname, "tmp", outputName);
 
     await new Promise((resolve, reject) => {
       execFile(
@@ -36,10 +37,7 @@ app.post("/api/flatten", upload.single("file"), async (req, res) => {
           inputPath
         ],
         (error) => {
-          if (error) {
-            console.error("Ghostscript error:", error);
-            return reject(error);
-          }
+          if (error) return reject(error);
           resolve();
         }
       );
@@ -55,14 +53,15 @@ app.post("/api/flatten", upload.single("file"), async (req, res) => {
     res.status(500).send("Flattening failed");
   }
 });
+
 /* -----------------------------
-   COURT READY PIPELINE (WITH REPORT)
+   COURT READY PIPELINE
 ----------------------------- */
 app.post("/court/court-ready", upload.single("file"), async (req, res) => {
   try {
     const inputPath = req.file.path;
     const outputName = `court-ready-${Date.now()}.pdf`;
-    const outputPath = path.join("tmp", outputName);
+    const outputPath = path.join(__dirname, "tmp", outputName);
 
     const fileBuffer = fs.readFileSync(inputPath);
     const fileText = fileBuffer.toString("latin1");
@@ -70,7 +69,6 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
     const detected = [];
     const resolved = [];
 
-    // --- Detection (Clerk Language)
     if (fileText.includes("/AcroForm") || fileText.includes("/XFA")) {
       detected.push({
         issue: "Interactive form fields detected",
@@ -81,7 +79,7 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
     if (fileText.includes("/Encrypt")) {
       detected.push({
         issue: "Encryption detected",
-        risk: "Encrypted PDFs may be rejected or blocked by filing systems."
+        risk: "Encrypted PDFs may be rejected by filing systems."
       });
     }
 
@@ -95,13 +93,12 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
     if (fileText.includes("/EmbeddedFiles")) {
       detected.push({
         issue: "Embedded attachments detected",
-        risk: "Attached files may not be accepted by court filing systems."
+        risk: "Attachments may not be accepted by court filing systems."
       });
     }
 
     let processedPath = inputPath;
 
-    // --- Auto-fix (Flatten if high-risk found)
     if (detected.length > 0) {
       await new Promise((resolve, reject) => {
         execFile(
@@ -119,10 +116,7 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
             inputPath
           ],
           (error) => {
-            if (error) {
-              console.error("Ghostscript error:", error);
-              return reject(error);
-            }
+            if (error) return reject(error);
             resolve();
           }
         );
@@ -130,7 +124,6 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
 
       processedPath = outputPath;
 
-      // Re-check after processing
       const finalBuffer = fs.readFileSync(processedPath);
       const finalText = finalBuffer.toString("latin1");
 
@@ -143,7 +136,6 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
       }
     }
 
-    // Store processed file temporarily (frontend will download)
     res.json({
       status: detected.length > 0 ? "processed_with_corrections" : "no_risk_detected",
       detected,
@@ -157,35 +149,33 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Court-ready processing failed" });
   }
 });
+
+/* -----------------------------
+   DOWNLOAD ROUTE
+----------------------------- */
 app.get("/court/download/:filename", (req, res) => {
-  const filePath = path.join("tmp", req.params.filename);
+  const filePath = path.join(__dirname, "tmp", req.params.filename);
 
   if (!fs.existsSync(filePath)) {
     return res.status(404).send("File not found.");
   }
 
- res.json({
-  status: detected.length > 0 ? "processed_with_corrections" : "no_risk_detected",
-  detected,
-  resolved,
-  download: `/court/download/${outputName}`,
-  disclaimer: "Processed to reduce common rejection causes. Subject to clerk review."
+  res.download(filePath, (err) => {
+    if (!err) {
+      fs.unlinkSync(filePath);
+    }
+  });
 });
-});
+
 /* -----------------------------
-   HEALTH CHECK (RENDER)
+   HEALTH CHECK
 ----------------------------- */
 app.get("/health", (req, res) => {
   res.status(200).send("ok");
 });
-app.get("/court/check/test", (req, res) => {
-  res.send("Court check route exists.");
-});
-app.get("/court/court-ready/test", (req, res) => {
-  res.send("Court-ready route exists.");
-});
+
 /* -----------------------------
-   FALLBACK (DO NOT OVERRIDE STATIC)
+   FALLBACK
 ----------------------------- */
 app.use((req, res) => {
   res.status(404).send("Not found");
