@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>PDFMender — Simple PDF Tools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- SEO -->
+  <title>PDFMender — Simple Tools for Court-Ready PDFs</title>
+  <meta name="description" content="PDFMender provides simple tools to fix common PDF submission issues, including court rejections caused by interactive or XFA form data." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://pdfmender.com/" />
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ETYW9NNRDN"></script>
@@ -14,67 +20,219 @@
   </script>
 
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f6f7f8;
-      padding: 40px;
+    :root{
+      --bg:#f4f6f8;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:rgba(17,24,39,0.10);
+      --shadow:0 18px 40px rgba(17,24,39,0.10);
+      --accent:#111827;
+      --accentSoft:rgba(17,24,39,0.06);
+      --focus:rgba(59,130,246,0.35);
     }
-    .card {
-      max-width: 720px;
-      margin: auto;
-      background: white;
-      padding: 36px;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+    * { box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% 8%, rgba(17,24,39,0.06), transparent 60%),
+        radial-gradient(700px 350px at 85% 18%, rgba(17,24,39,0.05), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.45;
     }
-    h1 { margin-top: 0; }
-    a.button {
-      display: inline-block;
-      background: black;
-      color: white;
-      padding: 14px 20px;
-      text-decoration: none;
-      border-radius: 4px;
-      font-weight: 600;
+
+    .wrap{
+      max-width:920px;
+      margin:0 auto;
+      padding:28px 18px 48px;
     }
-    footer {
-      margin-top: 40px;
-      font-size: 12px;
-      color: #666;
-      text-align: center;
+
+    /* Top bar */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:24px;
     }
+
+    .brand{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      text-decoration:none;
+      color:var(--text);
+      font-weight:800;
+      letter-spacing:-0.02em;
+    }
+
+    .brand-mark{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(17,24,39,0.18), rgba(17,24,39,0.05));
+      border:1px solid var(--border);
+      display:grid;
+      place-items:center;
+      font-size:14px;
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .link{
+      color:var(--text);
+      text-decoration:none;
+      font-weight:600;
+      font-size:14px;
+      padding:8px 10px;
+      border-radius:10px;
+    }
+    .link:hover{ background:var(--accentSoft); }
+    .link:focus{ outline:3px solid var(--focus); outline-offset:2px; }
+
+    /* Card */
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:32px;
+      box-shadow:var(--shadow);
+    }
+
+    h1{
+      margin:0 0 12px;
+      font-size:30px;
+      letter-spacing:-0.03em;
+      line-height:1.15;
+    }
+
+    .subhead{
+      margin:0 0 22px;
+      color:var(--muted);
+      font-size:15px;
+      max-width:70ch;
+    }
+
+    .section{
+      margin-top:22px;
+    }
+
+    h2{
+      margin:0 0 8px;
+      font-size:16px;
+      letter-spacing:-0.01em;
+    }
+
+    p{
+      margin:0 0 10px;
+    }
+
+    .primary-action{
+      margin-top:20px;
+      display:inline-block;
+      background:var(--accent);
+      color:white;
+      padding:14px 20px;
+      font-size:15px;
+      font-weight:700;
+      text-decoration:none;
+      border-radius:12px;
+      box-shadow:0 14px 22px rgba(17,24,39,0.18);
+    }
+    .primary-action:hover{ filter:brightness(1.04); }
+    .primary-action:focus{ outline:3px solid var(--focus); outline-offset:2px; }
+
+    .footer{
+      margin-top:36px;
+      padding-top:16px;
+      border-top:1px solid var(--border);
+      font-size:12.5px;
+      color:var(--muted);
+      text-align:center;
+      display:grid;
+      gap:6px;
+    }
+
+    .footer a{
+      color:var(--text);
+      text-decoration:none;
+      font-weight:700;
+    }
+    .footer a:hover{ text-decoration:underline; }
   </style>
 </head>
+
 <body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="topbar">
+      <a class="brand" href="/" aria-label="PDFMender home">
+        <span class="brand-mark">PM</span>
+        <span>PDFMender</span>
+      </a>
 
-  <div class="card">
-    <h1>PDFMender</h1>
+      <div class="top-actions">
+        <a class="link" href="/court/pdf-rejected-interactive-form.html">Court Tool</a>
+        <a class="link" href="mailto:support@pdfmender.com">Contact</a>
+      </div>
+    </div>
 
-    <p>
-      PDFMender provides simple, automated tools for fixing common PDF
-      submission issues — including documents rejected by courts and
-      government systems due to interactive or XFA forms.
-    </p>
+    <!-- Main card -->
+    <main class="card" role="main">
+      <h1>Simple Tools for Court-Ready PDFs</h1>
 
-    <p>
-      Tools are automated and do not involve human review.
-    </p>
+      <p class="subhead">
+        PDFMender provides automated tools to fix common PDF submission issues —
+        including court rejections caused by interactive or XFA form data.
+      </p>
 
-    <a
-      class="button"
-      href="/court/pdf-rejected-interactive-form.html"
-      onclick="gtag('event','open_tool',{event_category:'Navigation'})"
-    >
-      Fix a Court-Rejected PDF
-    </a>
+      <div class="section">
+        <h2>What this is</h2>
+        <p>
+          PDFMender is a document processing utility. Tools run automatically and
+          are designed to address specific, well-known PDF formatting problems
+          encountered during court and government filings.
+        </p>
+      </div>
 
-    <footer>
-      PDFMender is a software utility. It does not provide legal advice or
-      legal representation.<br><br>
-      Questions or issues?
-      <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
-    </footer>
+      <div class="section">
+        <h2>Most common use</h2>
+        <p>
+          Courts frequently reject PDFs that contain interactive form fields or
+          XFA data. These documents must be flattened into static PDFs before
+          they can be accepted.
+        </p>
+
+        <a
+          class="primary-action"
+          href="/court/pdf-rejected-interactive-form.html"
+          onclick="gtag('event','open_court_tool',{event_category:'Navigation'})"
+        >
+          Fix a Court-Rejected PDF
+        </a>
+      </div>
+
+      <div class="footer">
+        <div>
+          PDFMender is a software utility and does not provide legal advice,
+          legal review, or legal representation.
+        </div>
+        <div>
+          Questions or issues? <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
+        </div>
+        <div>
+          © 2026 PDFMender · Document processing utility
+        </div>
+      </div>
+    </main>
   </div>
-
 </body>
 </html>
