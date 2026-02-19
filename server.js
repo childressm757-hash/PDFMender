@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
+const { execFile } = require("child_process");
 const app = express();
 const upload = multer({ dest: "tmp/" });
 
@@ -14,25 +14,30 @@ app.use(express.static(path.join(__dirname, "public")));
 /* -----------------------------
    FLATTEN ENDPOINT
 ----------------------------- */
-app.post("/api/flatten", upload.single("file"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).send("No file uploaded");
+await new Promise((resolve, reject) => {
+  execFile(
+    "gs",
+    [
+      "-sDEVICE=pdfwrite",
+      "-dCompatibilityLevel=1.7",
+      "-dNOPAUSE",
+      "-dQUIET",
+      "-dBATCH",
+      "-dDetectDuplicateImages=true",
+      "-dCompressFonts=true",
+      "-r300",
+      `-sOutputFile=${outputPath}`,
+      req.file.path
+    ],
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error("Ghostscript error:", error);
+        return reject(error);
+      }
+      resolve();
     }
-
-    const originalName = req.file.originalname.replace(/\.pdf$/i, "");
-    const today = new Date().toISOString().split("T")[0];
-
-    const outputName = `${originalName} — Court-Approved — ${today}.pdf`;
-    const outputPath = path.join("tmp", outputName);
-
-    /*
-      IMPORTANT:
-      You already confirmed flattening WORKS.
-      This example simply copies the file to simulate success.
-      Replace this block ONLY if you want deeper PDF logic later.
-    */
-    fs.copyFileSync(req.file.path, outputPath);
+  );
+});
 
     res.download(outputPath, outputName, () => {
       fs.unlinkSync(req.file.path);
