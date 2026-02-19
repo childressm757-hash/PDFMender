@@ -209,6 +209,9 @@ app.get("/health", (req, res) => {
 app.get("/court/check/test", (req, res) => {
   res.send("Court check route exists.");
 });
+app.get("/court/court-ready/test", (req, res) => {
+  res.send("Court-ready route exists.");
+});
 /* -----------------------------
    FALLBACK (DO NOT OVERRIDE STATIC)
 ----------------------------- */
