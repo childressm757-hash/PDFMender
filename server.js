@@ -164,9 +164,13 @@ app.get("/court/download/:filename", (req, res) => {
     return res.status(404).send("File not found.");
   }
 
-  res.download(filePath, () => {
-    fs.unlinkSync(filePath);
-  });
+ res.json({
+  status: ...,
+  detected,
+  resolved,
+  download: `/court/download/${outputName}`,
+  disclaimer: ...
+});
 });
 /* -----------------------------
    HEALTH CHECK (RENDER)
