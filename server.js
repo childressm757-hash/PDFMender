@@ -35,9 +35,9 @@ await new Promise((resolve, reject) => {
         return reject(error);
       }
       resolve();
-    }
-  );
-});
+       }
+     );
+      });
 
     res.download(outputPath, outputName, () => {
       fs.unlinkSync(req.file.path);
