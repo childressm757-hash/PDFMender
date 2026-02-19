@@ -14,41 +14,47 @@ app.use(express.static(path.join(__dirname, "public")));
 /* -----------------------------
    FLATTEN ENDPOINT
 ----------------------------- */
-await new Promise((resolve, reject) => {
-  execFile(
-    "gs",
-    [
-      "-sDEVICE=pdfwrite",
-      "-dCompatibilityLevel=1.7",
-      "-dNOPAUSE",
-      "-dQUIET",
-      "-dBATCH",
-      "-dDetectDuplicateImages=true",
-      "-dCompressFonts=true",
-      "-r300",
-      `-sOutputFile=${outputPath}`,
-      req.file.path
-    ],
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error("Ghostscript error:", error);
-        return reject(error);
-      }
-      resolve();
-       }
-     );
-      });
+app.post("/api/flatten", upload.single("file"), async (req, res) => {
+  try {
+    const inputPath = req.file.path;
+    const outputName = `flattened-${Date.now()}.pdf`;
+    const outputPath = path.join("tmp", outputName);
+
+    await new Promise((resolve, reject) => {
+      execFile(
+        "gs",
+        [
+          "-sDEVICE=pdfwrite",
+          "-dCompatibilityLevel=1.7",
+          "-dNOPAUSE",
+          "-dQUIET",
+          "-dBATCH",
+          "-dDetectDuplicateImages=true",
+          "-dCompressFonts=true",
+          "-r300",
+          `-sOutputFile=${outputPath}`,
+          inputPath
+        ],
+        (error) => {
+          if (error) {
+            console.error("Ghostscript error:", error);
+            return reject(error);
+          }
+          resolve();
+        }
+      );
+    });
 
     res.download(outputPath, outputName, () => {
-      fs.unlinkSync(req.file.path);
+      fs.unlinkSync(inputPath);
       fs.unlinkSync(outputPath);
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).send("Flattening failed");
   }
 });
-
 /* -----------------------------
    HEALTH CHECK (RENDER)
 ----------------------------- */
