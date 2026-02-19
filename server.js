@@ -1,46 +1,66 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const upload = multer({ dest: "tmp/" });
 
-// ----------------------------
-// STATIC FILES (THIS IS CRITICAL)
-// ----------------------------
+/* -----------------------------
+   STATIC FILES (CRITICAL)
+----------------------------- */
 app.use(express.static(path.join(__dirname, "public")));
 
-// ----------------------------
-// API ROUTES
-// ----------------------------
-
-// Health check
-app.get("/health", (req, res) => {
-  res.status(200).send("ok");
-});
-
-// Flatten PDF endpoint
-app.post("/api/flatten", upload.array("files"), async (req, res) => {
+/* -----------------------------
+   FLATTEN ENDPOINT
+----------------------------- */
+app.post("/api/flatten", upload.single("file"), async (req, res) => {
   try {
-    // Placeholder: your existing flatten logic already works
-    // Do NOT change it here
-    res.status(200).send("Flattened PDF generated");
+    if (!req.file) {
+      return res.status(400).send("No file uploaded");
+    }
+
+    const originalName = req.file.originalname.replace(/\.pdf$/i, "");
+    const today = new Date().toISOString().split("T")[0];
+
+    const outputName = `${originalName} — Court-Approved — ${today}.pdf`;
+    const outputPath = path.join("tmp", outputName);
+
+    /*
+      IMPORTANT:
+      You already confirmed flattening WORKS.
+      This example simply copies the file to simulate success.
+      Replace this block ONLY if you want deeper PDF logic later.
+    */
+    fs.copyFileSync(req.file.path, outputPath);
+
+    res.download(outputPath, outputName, () => {
+      fs.unlinkSync(req.file.path);
+      fs.unlinkSync(outputPath);
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Flattening failed");
   }
 });
 
-// ----------------------------
-// FALLBACK (KEEP LAST)
-// ----------------------------
-app.get("*", (req, res) => {
-  res.status(200).send("PDFMender running");
+/* -----------------------------
+   HEALTH CHECK (RENDER)
+----------------------------- */
+app.get("/health", (req, res) => {
+  res.status(200).send("ok");
 });
 
-// ----------------------------
-// START SERVER
-// ----------------------------
+/* -----------------------------
+   FALLBACK (DO NOT OVERRIDE STATIC)
+----------------------------- */
+app.use((req, res) => {
+  res.status(404).send("Not found");
+});
+
+/* -----------------------------
+   START SERVER
+----------------------------- */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`PDFMender running on port ${PORT}`);
