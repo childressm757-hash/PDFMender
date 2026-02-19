@@ -1,43 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Court-Ready Processor</title>
-</head>
-<body>
-  <h1>Run Before Filing</h1>
-  <form id="uploadForm">
-    <input type="file" name="file" accept="application/pdf" required />
-    <button type="submit">Make Court-Ready</button>
-  </form>
+<script>
+  const form = document.getElementById("uploadForm");
 
-  <script>
-    const form = document.getElementById("uploadForm");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const formData = new FormData(form);
 
-      const formData = new FormData(form);
-
-      const response = await fetch("/court/court-ready", {
-        method: "POST",
-        body: formData
-      });
-
-      if (!response.ok) {
-        alert("Processing failed.");
-        return;
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "court-ready.pdf";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+    const response = await fetch("/court/court-ready", {
+      method: "POST",
+      body: formData
     });
-  </script>
-</body>
-</html>
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert("Processing failed.");
+      return;
+    }
+
+    // Display report
+    let report = "<h2>Compliance Report</h2>";
+    report += "<p>Status: " + result.status + "</p>";
+
+    if (result.detected.length > 0) {
+      report += "<h3>Detected Issues</h3><ul>";
+      result.detected.forEach(d => {
+        report += "<li><strong>" + d.issue + "</strong><br/>" + d.risk + "</li>";
+      });
+      report += "</ul>";
+    }
+
+    if (result.resolved.length > 0) {
+      report += "<h3>Corrections Applied</h3><ul>";
+      result.resolved.forEach(r => {
+        report += "<li>" + r + "</li>";
+      });
+      report += "</ul>";
+    }
+
+    report += "<p><em>" + result.disclaimer + "</em></p>";
+
+    report += '<button id="downloadBtn">Download Clean File</button>';
+
+    document.body.innerHTML += report;
+
+    document.getElementById("downloadBtn").onclick = () => {
+      window.location.href = result.download;
+    };
+  });
+</script>
