@@ -103,6 +103,104 @@ app.post("/court/check", upload.single("file"), async (req, res) => {
   }
 });
 /* -----------------------------
+   COURT READY PIPELINE
+----------------------------- */
+app.post("/court/court-ready", upload.single("file"), async (req, res) => {
+  try {
+    const inputPath = req.file.path;
+    const tempOutputName = `court-ready-${Date.now()}.pdf`;
+    const tempOutputPath = path.join("tmp", tempOutputName);
+
+    // --- STEP 1: Read file for detection
+    const fileBuffer = fs.readFileSync(inputPath);
+    const fileText = fileBuffer.toString("latin1");
+
+    const findings = [];
+
+    if (fileText.includes("/AcroForm")) {
+      findings.push({ type: "acroform", severity: "high" });
+    }
+
+    if (fileText.includes("/XFA")) {
+      findings.push({ type: "xfa", severity: "high" });
+    }
+
+    if (fileText.includes("/Encrypt")) {
+      findings.push({ type: "encryption", severity: "high" });
+    }
+
+    if (fileText.includes("/JavaScript")) {
+      findings.push({ type: "javascript", severity: "medium" });
+    }
+
+    if (fileText.includes("/EmbeddedFiles")) {
+      findings.push({ type: "attachments", severity: "medium" });
+    }
+
+    let processedPath = inputPath;
+
+    // --- STEP 2: Auto-fix if needed (flatten)
+    if (findings.length > 0) {
+      await new Promise((resolve, reject) => {
+        execFile(
+          "gs",
+          [
+            "-sDEVICE=pdfwrite",
+            "-dCompatibilityLevel=1.7",
+            "-dNOPAUSE",
+            "-dQUIET",
+            "-dBATCH",
+            "-dDetectDuplicateImages=true",
+            "-dCompressFonts=true",
+            "-r300",
+            `-sOutputFile=${tempOutputPath}`,
+            inputPath
+          ],
+          (error) => {
+            if (error) {
+              console.error("Ghostscript error:", error);
+              return reject(error);
+            }
+            resolve();
+          }
+        );
+      });
+
+      processedPath = tempOutputPath;
+    }
+
+    // --- STEP 3: Re-check processed file
+    const finalBuffer = fs.readFileSync(processedPath);
+    const finalText = finalBuffer.toString("latin1");
+
+    const remainingRisks = [];
+
+    if (finalText.includes("/AcroForm")) {
+      remainingRisks.push("acroform");
+    }
+
+    if (finalText.includes("/XFA")) {
+      remainingRisks.push("xfa");
+    }
+
+    if (finalText.includes("/Encrypt")) {
+      remainingRisks.push("encryption");
+    }
+
+    // --- STEP 4: Return cleaned file + report
+    res.download(processedPath, tempOutputName, () => {
+      fs.unlinkSync(inputPath);
+      if (processedPath !== inputPath) {
+        fs.unlinkSync(tempOutputPath);
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Court-ready processing failed" });
+  }
+});
+/* -----------------------------
    HEALTH CHECK (RENDER)
 ----------------------------- */
 app.get("/health", (req, res) => {
