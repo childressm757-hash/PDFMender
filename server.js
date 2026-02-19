@@ -56,6 +56,53 @@ app.post("/api/flatten", upload.single("file"), async (req, res) => {
   }
 });
 /* -----------------------------
+   COURT CHECK ENDPOINT
+----------------------------- */
+app.post("/court/check", upload.single("file"), async (req, res) => {
+  try {
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const fileText = fileBuffer.toString("latin1");
+
+    const findings = [];
+
+    if (fileText.includes("/AcroForm")) {
+      findings.push({ type: "acroform", severity: "high" });
+    }
+
+    if (fileText.includes("/XFA")) {
+      findings.push({ type: "xfa", severity: "high" });
+    }
+
+    if (fileText.includes("/Encrypt")) {
+      findings.push({ type: "encryption", severity: "high" });
+    }
+
+    if (fileText.includes("/JavaScript")) {
+      findings.push({ type: "javascript", severity: "medium" });
+    }
+
+    if (fileText.includes("/EmbeddedFiles")) {
+      findings.push({ type: "attachments", severity: "medium" });
+    }
+
+    fs.unlinkSync(req.file.path);
+
+    let status = "pass";
+    if (findings.length > 0) {
+      status = "risk";
+    }
+
+    res.json({
+      status,
+      findings
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Court check failed" });
+  }
+});
+/* -----------------------------
    HEALTH CHECK (RENDER)
 ----------------------------- */
 app.get("/health", (req, res) => {
