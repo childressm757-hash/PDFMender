@@ -165,11 +165,11 @@ app.get("/court/download/:filename", (req, res) => {
   }
 
  res.json({
-  status:,
+  status: detected.length > 0 ? "processed_with_corrections" : "no_risk_detected",
   detected,
   resolved,
   download: `/court/download/${outputName}`,
-  disclaimer: 
+  disclaimer: "Processed to reduce common rejection causes. Subject to clerk review."
 });
 });
 /* -----------------------------
