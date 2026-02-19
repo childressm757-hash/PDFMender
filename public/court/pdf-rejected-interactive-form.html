@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Fix Court-Rejected PDF — PDFMender</title>
+
   <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ETYW9NNRDN"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ETYW9NNRDN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ETYW9NNRDN');
+  </script>
 
-  gtag('config', 'G-ETYW9NNRDN');
-</script>
-
-  <title>Fix Court-Rejected PDF — Court-Approved Output</title>
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -27,9 +27,7 @@
       border-radius: 8px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
-    h1 {
-      margin-top: 0;
-    }
+    h1 { margin-top: 0; }
     .upload-box {
       border: 2px dashed #ccc;
       padding: 24px;
@@ -45,51 +43,55 @@
       cursor: pointer;
       border-radius: 4px;
     }
-    .conversion-line {
-      font-weight: 600;
-      margin-bottom: 12px;
+    .top-nav {
+      margin-bottom: 20px;
+    }
+    .top-nav a {
+      font-size: 14px;
+      text-decoration: none;
+      color: #333;
     }
     .note {
       color: #666;
       font-size: 13px;
-      margin-top: 12px;
+      margin-top: 16px;
+    }
+    footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h1>PDF Rejected by Court: Interactive or XFA Form Detected</h1>
+
+    <div class="top-nav">
+      ← <a href="/" onclick="gtag('event','return_home',{event_category:'Navigation'})">Home</a>
+    </div>
+
+    <h1>PDF Rejected by Court</h1>
 
     <p>
-      Your court filing was rejected because the PDF contains interactive
-      form fields or XFA form data. Courts require PDFs to be fully flattened
-      before submission.
+      Courts frequently reject PDFs that contain interactive form fields or
+      XFA form data. These elements must be flattened before submission.
     </p>
 
     <p>
-      Flattening removes all interactive elements and converts the document
-      into a static, court-acceptable file.
+      This tool automatically removes interactive elements and produces a
+      static, court-acceptable PDF.
     </p>
 
     <form
-  action="/api/flatten"
-  method="POST"
-  enctype="multipart/form-data"
-  onsubmit="trackPdfFixSuccess()"
+      action="/api/flatten"
+      method="POST"
+      enctype="multipart/form-data"
+      onsubmit="trackFixSubmit()"
     >
       <div class="upload-box">
-        <input
-          type="file"
-          name="file"
-          accept="application/pdf"
-          required
-        />
-      </div>
-
-      <!-- 🔥 CONVERSION SENTENCE (YOU ASKED FOR THIS) -->
-      <div class="conversion-line">
-        This fixes the most common court rejection: interactive or XFA forms.
+        <input type="file" name="file" accept="application/pdf" required />
       </div>
 
       <button type="submit">
@@ -99,22 +101,26 @@
 
     <div class="note">
       Files are processed automatically and are not stored after processing.
-      Your download will include the original filename, “Court-Approved,”
-      and today’s date.
     </div>
+
+    <footer>
+      PDFMender is a software utility and does not provide legal advice,
+      legal review, or legal representation.<br><br>
+      Support:
+      <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
+    </footer>
   </div>
-<script>
-  // Track successful PDF fix in Google Analytics
-  function trackPdfFixSuccess() {
-    if (typeof gtag === "function") {
-      gtag("event", "pdf_fixed_success", {
-        event_category: "PDF Tool",
-        event_label: "Court PDF Flattened",
-        value: 1
-      });
+
+  <script>
+    function trackFixSubmit() {
+      if (typeof gtag === "function") {
+        gtag("event", "pdf_fix_submitted", {
+          event_category: "PDF Tool",
+          event_label: "Court PDF Flatten"
+        });
+      }
     }
-  }
-</script>
+  </script>
 
 </body>
 </html>
