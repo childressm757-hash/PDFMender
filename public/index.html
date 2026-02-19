@@ -2,59 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>PDFMender — Simple PDF Tools</title>
+
   <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ETYW9NNRDN"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ETYW9NNRDN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ETYW9NNRDN');
+  </script>
 
-  gtag('config', 'G-ETYW9NNRDN');
-</script>
-
-  <title>PDFMender — Court-Ready PDFs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f7f7f7;
-      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f6f7f8;
       padding: 40px;
-      color: #111;
     }
-    .container {
+    .card {
       max-width: 720px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 32px;
+      margin: auto;
+      background: white;
+      padding: 36px;
       border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
-    h1 {
-      margin-top: 0;
-    }
-    a {
+    h1 { margin-top: 0; }
+    a.button {
       display: inline-block;
-      margin-top: 16px;
-      color: #0066cc;
+      background: black;
+      color: white;
+      padding: 14px 20px;
       text-decoration: none;
-      font-weight: 500;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+
+  <div class="card">
     <h1>PDFMender</h1>
+
     <p>
-      Fix court-rejected PDFs instantly.
-    </p>
-    <p>
-      Convert interactive or XFA PDFs into flattened, court-approved files.
+      PDFMender provides simple, automated tools for fixing common PDF
+      submission issues — including documents rejected by courts and
+      government systems due to interactive or XFA forms.
     </p>
 
-    <a href="/court/pdf-rejected-interactive-form.html">
-      Fix a court-rejected PDF →
+    <p>
+      Tools are automated and do not involve human review.
+    </p>
+
+    <a
+      class="button"
+      href="/court/pdf-rejected-interactive-form.html"
+      onclick="gtag('event','open_tool',{event_category:'Navigation'})"
+    >
+      Fix a Court-Rejected PDF
     </a>
+
+    <footer>
+      PDFMender is a software utility. It does not provide legal advice or
+      legal representation.<br><br>
+      Questions or issues?
+      <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
+    </footer>
   </div>
+
 </body>
 </html>
