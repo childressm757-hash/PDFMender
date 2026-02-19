@@ -108,7 +108,9 @@ app.post("/court/check", upload.single("file"), async (req, res) => {
 app.get("/health", (req, res) => {
   res.status(200).send("ok");
 });
-
+app.get("/court/check/test", (req, res) => {
+  res.send("Court check route exists.");
+});
 /* -----------------------------
    FALLBACK (DO NOT OVERRIDE STATIC)
 ----------------------------- */
