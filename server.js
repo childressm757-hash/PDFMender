@@ -165,11 +165,11 @@ app.get("/court/download/:filename", (req, res) => {
   }
 
  res.json({
-  status: ...,
+  status:,
   detected,
   resolved,
   download: `/court/download/${outputName}`,
-  disclaimer: ...
+  disclaimer: 
 });
 });
 /* -----------------------------
