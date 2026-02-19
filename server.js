@@ -56,91 +56,53 @@ app.post("/api/flatten", upload.single("file"), async (req, res) => {
   }
 });
 /* -----------------------------
-   COURT CHECK ENDPOINT
------------------------------ */
-app.post("/court/check", upload.single("file"), async (req, res) => {
-  try {
-    const fileBuffer = fs.readFileSync(req.file.path);
-    const fileText = fileBuffer.toString("latin1");
-
-    const findings = [];
-
-    if (fileText.includes("/AcroForm")) {
-      findings.push({ type: "acroform", severity: "high" });
-    }
-
-    if (fileText.includes("/XFA")) {
-      findings.push({ type: "xfa", severity: "high" });
-    }
-
-    if (fileText.includes("/Encrypt")) {
-      findings.push({ type: "encryption", severity: "high" });
-    }
-
-    if (fileText.includes("/JavaScript")) {
-      findings.push({ type: "javascript", severity: "medium" });
-    }
-
-    if (fileText.includes("/EmbeddedFiles")) {
-      findings.push({ type: "attachments", severity: "medium" });
-    }
-
-    fs.unlinkSync(req.file.path);
-
-    let status = "pass";
-    if (findings.length > 0) {
-      status = "risk";
-    }
-
-    res.json({
-      status,
-      findings
-    });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Court check failed" });
-  }
-});
-/* -----------------------------
-   COURT READY PIPELINE
+   COURT READY PIPELINE (WITH REPORT)
 ----------------------------- */
 app.post("/court/court-ready", upload.single("file"), async (req, res) => {
   try {
     const inputPath = req.file.path;
-    const tempOutputName = `court-ready-${Date.now()}.pdf`;
-    const tempOutputPath = path.join("tmp", tempOutputName);
+    const outputName = `court-ready-${Date.now()}.pdf`;
+    const outputPath = path.join("tmp", outputName);
 
-    // --- STEP 1: Read file for detection
     const fileBuffer = fs.readFileSync(inputPath);
     const fileText = fileBuffer.toString("latin1");
 
-    const findings = [];
+    const detected = [];
+    const resolved = [];
 
-    if (fileText.includes("/AcroForm")) {
-      findings.push({ type: "acroform", severity: "high" });
-    }
-
-    if (fileText.includes("/XFA")) {
-      findings.push({ type: "xfa", severity: "high" });
+    // --- Detection (Clerk Language)
+    if (fileText.includes("/AcroForm") || fileText.includes("/XFA")) {
+      detected.push({
+        issue: "Interactive form fields detected",
+        risk: "Filing systems such as CM/ECF may reject interactive PDFs."
+      });
     }
 
     if (fileText.includes("/Encrypt")) {
-      findings.push({ type: "encryption", severity: "high" });
+      detected.push({
+        issue: "Encryption detected",
+        risk: "Encrypted PDFs may be rejected or blocked by filing systems."
+      });
     }
 
     if (fileText.includes("/JavaScript")) {
-      findings.push({ type: "javascript", severity: "medium" });
+      detected.push({
+        issue: "Embedded JavaScript detected",
+        risk: "Active content may trigger security rejection."
+      });
     }
 
     if (fileText.includes("/EmbeddedFiles")) {
-      findings.push({ type: "attachments", severity: "medium" });
+      detected.push({
+        issue: "Embedded attachments detected",
+        risk: "Attached files may not be accepted by court filing systems."
+      });
     }
 
     let processedPath = inputPath;
 
-    // --- STEP 2: Auto-fix if needed (flatten)
-    if (findings.length > 0) {
+    // --- Auto-fix (Flatten if high-risk found)
+    if (detected.length > 0) {
       await new Promise((resolve, reject) => {
         execFile(
           "gs",
@@ -153,7 +115,7 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
             "-dDetectDuplicateImages=true",
             "-dCompressFonts=true",
             "-r300",
-            `-sOutputFile=${tempOutputPath}`,
+            `-sOutputFile=${outputPath}`,
             inputPath
           ],
           (error) => {
@@ -166,39 +128,45 @@ app.post("/court/court-ready", upload.single("file"), async (req, res) => {
         );
       });
 
-      processedPath = tempOutputPath;
-    }
+      processedPath = outputPath;
 
-    // --- STEP 3: Re-check processed file
-    const finalBuffer = fs.readFileSync(processedPath);
-    const finalText = finalBuffer.toString("latin1");
+      // Re-check after processing
+      const finalBuffer = fs.readFileSync(processedPath);
+      const finalText = finalBuffer.toString("latin1");
 
-    const remainingRisks = [];
-
-    if (finalText.includes("/AcroForm")) {
-      remainingRisks.push("acroform");
-    }
-
-    if (finalText.includes("/XFA")) {
-      remainingRisks.push("xfa");
-    }
-
-    if (finalText.includes("/Encrypt")) {
-      remainingRisks.push("encryption");
-    }
-
-    // --- STEP 4: Return cleaned file + report
-    res.download(processedPath, tempOutputName, () => {
-      fs.unlinkSync(inputPath);
-      if (processedPath !== inputPath) {
-        fs.unlinkSync(tempOutputPath);
+      if (!finalText.includes("/AcroForm") && !finalText.includes("/XFA")) {
+        resolved.push("Interactive form fields flattened.");
       }
+
+      if (!finalText.includes("/Encrypt")) {
+        resolved.push("Encryption removed or not present.");
+      }
+    }
+
+    // Store processed file temporarily (frontend will download)
+    res.json({
+      status: detected.length > 0 ? "processed_with_corrections" : "no_risk_detected",
+      detected,
+      resolved,
+      download: `/court/download/${outputName}`,
+      disclaimer: "Processed to reduce common rejection causes. Subject to clerk review."
     });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Court-ready processing failed" });
   }
+});
+app.get("/court/download/:filename", (req, res) => {
+  const filePath = path.join("tmp", req.params.filename);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send("File not found.");
+  }
+
+  res.download(filePath, () => {
+    fs.unlinkSync(filePath);
+  });
 });
 /* -----------------------------
    HEALTH CHECK (RENDER)
