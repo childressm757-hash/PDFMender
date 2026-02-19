@@ -102,6 +102,18 @@
       and today’s date.
     </div>
   </div>
+<script>
+  // Track successful PDF fix in Google Analytics
+  function trackPdfFixSuccess() {
+    if (typeof gtag === "function") {
+      gtag("event", "pdf_fixed_success", {
+        event_category: "PDF Tool",
+        event_label: "Court PDF Flattened",
+        value: 1
+      });
+    }
+  }
+</script>
 
 </body>
 </html>
