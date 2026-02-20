@@ -4,71 +4,73 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <title>Avoid Court Rejection — Validate & Fix PDFs Before Filing | PDFMender</title>
-  <meta name="description" content="Preflight and fix common CM/ECF and state eFile PDF rejection causes: interactive/XFA forms, encryption, embedded scripts, attachments. Processed and deleted after completion." />
+  <title>Avoid Court Rejection — Court Filing PDF Preflight & Fix | PDFMender</title>
+  <meta name="description" content="Court filing PDF preflight and correction. Detect and fix common CM/ECF and state eFile rejection causes: interactive/XFA forms, encryption, embedded scripts, attachments." />
 
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="header">
+  <div class="wrap">
+    <div class="topbar">
       <div class="brand">
         <div class="name">PDFMender</div>
         <div class="tag">Last stop before you file</div>
       </div>
       <div class="nav">
-        <a href="/court-ready.html">Court Filing Preflight</a>
-        <a href="/fix-court-rejected-pdf.html">Fix Court-Rejected PDF</a>
+        <a href="/court-ready.html">Court Preflight</a>
+        <a href="/court/pdf-rejected-interactive-form.html">Fix Interactive/XFA</a>
+        <a href="/contact.html">Contact</a>
       </div>
     </div>
 
-    <div class="hero">
-      <div class="kicker">Court filing compliance</div>
-      <h1 class="h1">Avoid Court Rejection. Validate & Fix Your PDF Before Submission.</h1>
+    <div class="shell">
+      <div class="kicker">Court Filing Compliance</div>
+      <h1 class="h1">Court Filing PDF Preflight (Check & Fix)</h1>
       <p class="sub">
-        Automatically detects and corrects common federal <strong>CM/ECF</strong> and state eFile rejection causes — including
-        <strong>interactive/XFA forms</strong>, <strong>encryption</strong>, <strong>embedded JavaScript</strong>, and <strong>attachments</strong>.
+        Detects and corrects common technical rejection causes before submission to <strong>CM/ECF</strong> and major state eFile portals.
+        Output includes a clerk-language compliance summary and a filing-ready PDF.
       </p>
 
-      <div class="actions">
-        <a class="btn" href="/court-ready.html">Run Court Filing Preflight</a>
-        <a class="btn secondary" href="/fix-court-rejected-pdf.html">Fix Interactive / XFA PDF</a>
+      <div class="btnrow">
+        <a class="btn" href="/court-ready.html">Run Preflight</a>
+        <a class="btn secondary" href="/court/pdf-rejected-interactive-form.html">Fix Interactive / XFA PDF</a>
       </div>
 
-      <p class="small">
-        Designed to reduce common technical rejection causes. Subject to clerk review.
+      <div class="rule"></div>
+
+      <div class="grid2">
+        <div class="module">
+          <h2>Preflight: Detect + Correct</h2>
+          <p>Best when you haven’t filed yet. Runs a technical scan and applies safe corrections.</p>
+          <ul class="list">
+            <li>Interactive / XFA form content</li>
+            <li>Encryption / restrictions</li>
+            <li>Embedded JavaScript</li>
+            <li>Attachments / embedded files</li>
+          </ul>
+          <div class="btnrow">
+            <a class="btn" href="/court-ready.html">Open Preflight</a>
+          </div>
+        </div>
+
+        <div class="module">
+          <h2>Fix Tool: “PDF Rejected — Interactive/XFA”</h2>
+          <p>Best when you already received a rejection notice referencing interactive fields or XFA.</p>
+          <ul class="list">
+            <li>Converts to static PDF output</li>
+            <li>Removes common interactive rejection triggers</li>
+            <li>Download immediately</li>
+          </ul>
+          <div class="btnrow">
+            <a class="btn" href="/court/pdf-rejected-interactive-form.html">Open Fix Tool</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        Technical processing only. No legal advice. Designed to reduce common technical rejection causes. Subject to clerk review.
         Files are processed and deleted after completion.
-      </p>
-    </div>
-
-    <div class="grid">
-      <div class="card">
-        <h2>Court Filing Preflight (Check & Fix)</h2>
-        <p>
-          Run this before uploading to CM/ECF or state eFile systems. You get a clerk-language report and a filing-ready PDF.
-        </p>
-        <a class="btn" href="/court-ready.html">Open Preflight</a>
       </div>
-
-      <div class="card">
-        <h2>PDF Rejected by Court? Fix Interactive / XFA Forms</h2>
-        <p>
-          Converts interactive and XFA PDFs into static, court-acceptable files. Common fix after a rejection notice.
-        </p>
-        <a class="btn" href="/fix-court-rejected-pdf.html">Open Fix Tool</a>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:14px;">
-      <div class="kicker">Where this helps</div>
-      <p style="margin:0; color:var(--muted);">
-        Commonly used prior to submission to <strong>CM/ECF</strong> and major state eFile portals (e.g., Texas, New York, California, Florida, Delaware).
-        Rules vary by court; this tool is designed to reduce frequent technical rejection triggers.
-      </p>
-    </div>
-
-    <div class="footer">
-      © PDFMender — Technical processing only. No legal advice. “Designed to reduce common rejection causes. Subject to clerk review.”
     </div>
   </div>
 </body>
