@@ -5,22 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   <title>PDF Rejected by Court? Fix Interactive/XFA + CM/ECF Filing Errors | PDFMender</title>
-  <meta name="description" content="Court filing PDF preflight + fix. Reduce common CM/ECF and state eFile rejection causes: interactive/XFA forms, encryption, active content, and embedded attachments. PDFMender is the last stop before you file." />
+  <meta name="description" content="Upload your court filing PDF and reduce common rejection causes including interactive/XFA forms, encryption, and active content. Designed for CM/ECF and major state eFile systems." />
 
   <link rel="canonical" href="https://pdfmender.com/" />
-  <meta property="og:title" content="PDF Rejected by Court? Fix Interactive/XFA + Filing Errors | PDFMender" />
-  <meta property="og:description" content="Court filing PDF preflight + fix for CM/ECF and major state eFile systems." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://pdfmender.com/" />
-
   <link rel="stylesheet" href="/styles.css" />
 </head>
 
 <body>
   <div class="wrap">
 
+    <!-- HEADER -->
     <header class="topbar">
-      <a class="brand" href="/index.html" aria-label="PDFMender Home">
+      <a class="brand" href="/">
         <div class="mark">PM</div>
         <div class="brandtext">
           <div class="brandname">PDFMENDER</div>
@@ -28,84 +24,60 @@
         </div>
       </a>
 
-      <nav class="nav" aria-label="Primary navigation">
-        <a href="/court-preflight.html">Court Preflight</a>
+      <nav class="nav">
         <a href="/fix-interactive-xfa.html">Fix Interactive/XFA</a>
+        <a href="/pdf-must-be-flattened.html">“Must be flattened”</a>
         <a href="/contact.html">Contact</a>
       </nav>
     </header>
 
+    <!-- MAIN PANEL -->
     <main class="shell">
 
-      <div class="kicker">COURT FILING COMPLIANCE</div>
+      <div class="kicker">COURT FILING PRE-SUBMISSION CHECK</div>
 
       <h1 class="h1">
         PDF Rejected by Court?
         <br />
-        Fix Interactive/XFA + Filing Errors Before Submission.
+        Upload and Generate a Filing-Ready Version.
       </h1>
 
       <p class="sub">
-        Court filing PDF preflight and correction for <strong>CM/ECF (Federal Courts)</strong> and major state eFile systems,
-        including <strong>Texas eFile</strong>, <strong>NYSCEF (New York)</strong>, <strong>California eFile</strong>,
-        <strong>Delaware File &amp; Serve</strong>, and <strong>Florida ePortal</strong>.
+        Designed to reduce common CM/ECF and state eFile rejection causes including
+        <strong>interactive/XFA forms</strong>, <strong>encryption</strong>,
+        <strong>active content</strong>, and <strong>embedded attachments</strong>.
       </p>
 
-      <div class="btnrow">
-        <a class="btn" href="/court-preflight.html">Run Court Preflight</a>
-        <a class="btn secondary" href="/fix-interactive-xfa.html">Fix Interactive/XFA PDF</a>
+      <!-- TOOL EMBEDDED DIRECTLY -->
+      <div class="card" style="margin-top:28px;">
+        <h2>Run Court Preflight</h2>
+        <p>Upload your PDF. Receive a clerk-language compliance report and a normalized output file.</p>
+
+        <form id="uploadForm" enctype="multipart/form-data">
+          <input type="file" name="file" accept="application/pdf" required style="margin:18px 0;">
+          <br/>
+          <button type="submit" class="btn">Generate Filing-Ready PDF</button>
+        </form>
+
+        <div id="report" style="margin-top:22px;"></div>
       </div>
 
-      <p class="note">
-        If your rejection notice says <a href="/cm-ecf-interactive-pdf-rejected.html">“Interactive PDF forms are not permitted”</a>
-        or <a href="/pdf-must-be-flattened.html">“PDF must be flattened”</a>, use the tools above before resubmitting.
-        Technical processing only. Subject to clerk review.
-      </p>
+      <div class="note">
+        Technical processing only. Subject to clerk review. Files are deleted after processing.
+      </div>
 
       <div class="rule"></div>
 
+      <!-- AUTHORITY BELOW FOLD -->
       <section class="card">
-        <h2>What PDFMender checks (and why filings get rejected)</h2>
-        <p>
-          Filing systems commonly reject PDFs for interactive elements (AcroForm/XFA), encryption or restrictions,
-          active content, or embedded attachments. Start with a
-          <a href="/court-preflight.html">court filing PDF preflight check</a>,
-          then use <a href="/fix-interactive-xfa.html">the interactive/XFA fix</a> if needed.
-        </p>
+        <h2>Common Clerk Rejection Language</h2>
         <ul class="list">
-          <li>Interactive forms (AcroForm), XFA, and widget annotations</li>
-          <li>Encryption / security restriction markers</li>
-          <li>Active content (JavaScript) markers</li>
-          <li>Embedded attachments markers</li>
+          <li>“Interactive PDF forms are not permitted.”</li>
+          <li>“Document contains XFA and must be flattened.”</li>
+          <li>“Encrypted PDFs cannot be processed.”</li>
+          <li>“Active content detected.”</li>
+          <li>“Embedded attachments are not allowed.”</li>
         </ul>
-      </section>
-
-      <div class="rule"></div>
-
-      <section class="grid2">
-        <div class="card">
-          <h2>Court Filing Preflight (Check &amp; Fix)</h2>
-          <p>
-            Upload once. Get a clerk-language report and a filing-ready PDF. Designed as a safeguard before submission.
-            Start here: <a href="/court-preflight.html">Court Preflight</a>.
-          </p>
-          <div class="btnrow">
-            <a class="btn" href="/court-ready.html">Open Preflight Tool</a>
-            <a class="btn secondary" href="/encrypted-pdf-filing-error.html">Encrypted PDF help</a>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Fix Interactive / XFA (Most Common Rejection)</h2>
-          <p>
-            When the clerk notice says interactive forms aren’t permitted, convert to a static PDF:
-            <a href="/fix-interactive-xfa.html">Fix Interactive/XFA</a>.
-          </p>
-          <div class="btnrow">
-            <a class="btn" href="/court/pdf-rejected-interactive-form.html">Open Fix Tool</a>
-            <a class="btn secondary" href="/cm-ecf-interactive-pdf-rejected.html">CM/ECF language</a>
-          </div>
-        </div>
       </section>
 
       <div class="rule"></div>
@@ -115,65 +87,96 @@
 
         <h3>What does “PDF must be flattened” mean?</h3>
         <p>
-          It usually means your document contains interactive elements. Read:
-          <a href="/pdf-must-be-flattened.html">PDF must be flattened</a>.
+          It typically indicates your document contains interactive form fields (AcroForm/XFA).
+          Learn more: <a href="/pdf-must-be-flattened.html">PDF must be flattened</a>.
         </p>
 
         <h3>Why did CM/ECF reject my PDF?</h3>
         <p>
-          Common triggers are interactive/XFA forms, restrictions, or active content. See:
-          <a href="/cm-ecf-interactive-pdf-rejected.html">CM/ECF rejected PDF</a>.
+          Federal filing systems may reject interactive, encrypted, or script-enabled PDFs.
+          See: <a href="/cm-ecf-interactive-pdf-rejected.html">CM/ECF rejected PDF</a>.
         </p>
 
-        <h3>What if the PDF is password-protected?</h3>
+        <h3>Can I fix interactive/XFA forms?</h3>
         <p>
-          Many portals reject encrypted PDFs. See:
-          <a href="/encrypted-pdf-filing-error.html">Encrypted PDF filing error</a>.
+          Yes. Use the <a href="/fix-interactive-xfa.html">Interactive/XFA Fix Tool</a>.
         </p>
       </section>
 
+      <!-- FOOTER -->
       <footer class="footer">
         <div class="footerlinks">
-          <a href="/index.html">Home</a>
-          <a href="/court-preflight.html">Court Preflight</a>
+          <a href="/">Home</a>
           <a href="/fix-interactive-xfa.html">Fix Interactive/XFA</a>
-          <a href="/pdf-must-be-flattened.html">“Must be flattened”</a>
+          <a href="/court-preflight.html">Court Preflight</a>
           <a href="/about.html">About</a>
           <a href="/privacy.html">Privacy</a>
           <a href="/terms.html">Terms</a>
           <a href="/contact.html">Contact</a>
         </div>
         <div>
-          Technical processing only. No legal advice. Subject to clerk review.
-          Support: <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
+          No legal advice. Technical normalization service. Support:
+          <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
         </div>
       </footer>
 
     </main>
   </div>
 
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"FAQPage",
-    "mainEntity":[
-      {
-        "@type":"Question",
-        "name":"What does “PDF must be flattened” mean?",
-        "acceptedAnswer":{"@type":"Answer","text":"It usually means your document contains interactive elements (AcroForm/XFA). Courts often require static PDFs."}
-      },
-      {
-        "@type":"Question",
-        "name":"Why did CM/ECF reject my PDF?",
-        "acceptedAnswer":{"@type":"Answer","text":"Common triggers are interactive/XFA forms, security restrictions, active content, or embedded attachments."}
-      },
-      {
-        "@type":"Question",
-        "name":"What if the PDF is password-protected?",
-        "acceptedAnswer":{"@type":"Answer","text":"Many portals reject encrypted PDFs. A normalized static output can reduce rejection risk."}
+  <!-- JS -->
+  <script>
+    document.getElementById("uploadForm").addEventListener("submit", async function(e){
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const reportDiv = document.getElementById("report");
+      reportDiv.innerHTML = "Processing...";
+
+      try {
+        const response = await fetch("/court/court-ready", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          reportDiv.innerHTML = "Processing failed.";
+          return;
+        }
+
+        const result = await response.json();
+
+        let html = "<h2>Compliance Report</h2>";
+        html += "<p><strong>Status:</strong> " + result.status + "</p>";
+
+        if (result.detected && result.detected.length > 0) {
+          html += "<h3>Detected Issues</h3><ul>";
+          result.detected.forEach(d => {
+            html += "<li><strong>" + d.issue + "</strong><br/>" + d.risk + "</li>";
+          });
+          html += "</ul>";
+        }
+
+        if (result.resolved && result.resolved.length > 0) {
+          html += "<h3>Corrections Applied</h3><ul>";
+          result.resolved.forEach(r => {
+            html += "<li>" + r + "</li>";
+          });
+          html += "</ul>";
+        }
+
+        html += '<button id="downloadBtn" class="btn" style="margin-top:18px;">Download Filing-Ready PDF</button>';
+
+        reportDiv.innerHTML = html;
+
+        document.getElementById("downloadBtn").onclick = () => {
+          window.location.href = result.download;
+        };
+
+      } catch(err) {
+        reportDiv.innerHTML = "Unexpected error occurred.";
       }
-    ]
-  }
+    });
   </script>
+
 </body>
 </html>
