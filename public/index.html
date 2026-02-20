@@ -4,49 +4,148 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <title>Avoid Court Rejection — Court Filing PDF Preflight & Fix | PDFMender</title>
-  <meta name="description" content="Court filing PDF preflight and correction. Detect and fix common CM/ECF and state eFile rejection causes: interactive/XFA forms, encryption, embedded scripts, attachments." />
+  <title>PDF Rejected by Court? Fix Interactive/XFA + CM/ECF Filing Errors | PDFMender</title>
+  <meta name="description" content="PDF rejected by court? Run court filing PDF preflight and fix interactive/XFA forms, encryption, embedded scripts, and other common CM/ECF and state eFile rejection causes before submission." />
+
+  <link rel="canonical" href="https://YOURDOMAIN.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="PDF Rejected by Court? Fix Interactive/XFA + Filing Errors | PDFMender" />
+  <meta property="og:description" content="Court filing PDF preflight + correction for CM/ECF and state eFile systems. Detect and fix common rejection causes before submission." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://YOURDOMAIN.com/" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Court Filing PDF Preflight + Fix | PDFMender" />
+  <meta name="twitter:description" content="Detect + fix common CM/ECF and state eFile PDF rejection causes." />
 
   <link rel="stylesheet" href="/styles.css" />
+
+  <!-- Software schema -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"SoftwareApplication",
+    "name":"PDFMender",
+    "applicationCategory":"BusinessApplication",
+    "operatingSystem":"Web",
+    "description":"Court filing PDF preflight and correction tool for CM/ECF and state eFile systems.",
+    "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+  }
+  </script>
+
+  <!-- Organization + website schema -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"PDFMender",
+    "url":"https://YOURDOMAIN.com/",
+    "sameAs":[]
+  }
+  </script>
+
+  <!-- FAQ schema (helps rich results when eligible) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"Why are interactive PDFs rejected by courts?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"Many filing systems (including CM/ECF and state eFile portals) block interactive or XFA-based PDFs because they contain dynamic form content. Courts typically require static PDFs for reliable processing."
+        }
+      },
+      {
+        "@type":"Question",
+        "name":"What is an XFA form in a PDF?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"XFA (XML Forms Architecture) is a dynamic form format used in some PDFs. Many court filing systems do not accept XFA content and may reject the filing until it is converted to a static PDF."
+        }
+      },
+      {
+        "@type":"Question",
+        "name":"How do I flatten a PDF for court filing?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"Flattening converts interactive form fields into static page content. PDFMender converts interactive/XFA PDFs into static filing-ready PDFs to reduce common rejection triggers."
+        }
+      },
+      {
+        "@type":"Question",
+        "name":"Why do courts reject encrypted PDFs?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"Encryption and restrictions can prevent the filing system from processing or scanning a PDF. Removing encryption/restrictions improves compatibility with court filing portals."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
+
 <body>
   <div class="wrap">
+
+    <!-- HEADER -->
     <div class="topbar">
-      <div class="brand">
-        <div class="name">PDFMender</div>
-        <div class="tag">Last stop before you file</div>
+      <div class="brandwrap">
+        <div class="mark">PM</div>
+        <div class="brandtext">
+          <div class="brandname">PDFMENDER</div>
+          <div class="brandtag">LAST STOP BEFORE YOU FILE</div>
+        </div>
       </div>
+
       <div class="nav">
         <a href="/court-ready.html">Court Preflight</a>
         <a href="/court/pdf-rejected-interactive-form.html">Fix Interactive/XFA</a>
-        <a href="/contact.html">Contact</a>
       </div>
     </div>
 
+    <!-- MAIN -->
     <div class="shell">
-      <div class="kicker">Court Filing Compliance</div>
-      <h1 class="h1">Court Filing PDF Preflight (Check & Fix)</h1>
+
+      <div class="kicker">COURT FILING COMPLIANCE</div>
+
+      <h1 class="h1">PDF Rejected by Court? Fix Interactive/XFA + Filing Errors Before Submission.</h1>
+
       <p class="sub">
-        Detects and corrects common technical rejection causes before submission to <strong>CM/ECF</strong> and major state eFile portals.
-        Output includes a clerk-language compliance summary and a filing-ready PDF.
+        Court filing PDF preflight + correction for <strong>CM/ECF</strong> and major state eFile systems.
+        Detect and fix common rejection causes including <strong>interactive/XFA forms</strong>, <strong>encryption</strong>,
+        <strong>embedded JavaScript</strong>, and <strong>embedded attachments</strong>.
       </p>
 
       <div class="btnrow">
-        <a class="btn" href="/court-ready.html">Run Preflight</a>
-        <a class="btn secondary" href="/court/pdf-rejected-interactive-form.html">Fix Interactive / XFA PDF</a>
+        <a class="btn" href="/court-ready.html">Run Court Preflight</a>
+        <a class="btn secondary" href="/court/pdf-rejected-interactive-form.html">Fix Interactive/XFA PDF</a>
+      </div>
+
+      <div class="small">
+        Technical processing only. No legal advice. Designed to reduce common technical rejection causes. Subject to clerk review.
+        Files are processed and deleted after completion.
       </div>
 
       <div class="rule"></div>
 
+      <!-- PRODUCT MODULES -->
       <div class="grid2">
         <div class="module">
-          <h2>Preflight: Detect + Correct</h2>
-          <p>Best when you haven’t filed yet. Runs a technical scan and applies safe corrections.</p>
+          <h2>Court Filing PDF Preflight (Check + Fix)</h2>
+          <p>
+            Use before filing. Scans for common rejection triggers and applies safe corrections when possible.
+          </p>
           <ul class="list">
-            <li>Interactive / XFA form content</li>
+            <li>Interactive / AcroForm fields</li>
+            <li>XFA form content</li>
             <li>Encryption / restrictions</li>
             <li>Embedded JavaScript</li>
-            <li>Attachments / embedded files</li>
+            <li>Embedded attachments</li>
           </ul>
           <div class="btnrow">
             <a class="btn" href="/court-ready.html">Open Preflight</a>
@@ -54,12 +153,14 @@
         </div>
 
         <div class="module">
-          <h2>Fix Tool: “PDF Rejected — Interactive/XFA”</h2>
-          <p>Best when you already received a rejection notice referencing interactive fields or XFA.</p>
+          <h2>Fix Tool: “Interactive / XFA Rejection”</h2>
+          <p>
+            Use after a rejection notice referencing interactive fields or XFA. Converts to a static, court-acceptable PDF.
+          </p>
           <ul class="list">
-            <li>Converts to static PDF output</li>
-            <li>Removes common interactive rejection triggers</li>
-            <li>Download immediately</li>
+            <li>Converts interactive/XFA to static output</li>
+            <li>Reduces common “interactive PDF not allowed” errors</li>
+            <li>Immediate download</li>
           </ul>
           <div class="btnrow">
             <a class="btn" href="/court/pdf-rejected-interactive-form.html">Open Fix Tool</a>
@@ -67,10 +168,46 @@
         </div>
       </div>
 
-      <div class="footer">
-        Technical processing only. No legal advice. Designed to reduce common technical rejection causes. Subject to clerk review.
-        Files are processed and deleted after completion.
+      <div class="rule"></div>
+
+      <!-- SEO SEMANTIC SECTION -->
+      <div class="kicker">COMMON REJECTION CAUSES</div>
+      <h2 class="h2">Common CM/ECF and State eFile PDF Rejection Causes</h2>
+      <ul class="list">
+        <li>Interactive or XFA PDFs not permitted</li>
+        <li>Encrypted PDFs blocked by filing portals</li>
+        <li>Embedded JavaScript flagged as active content</li>
+        <li>Attachments embedded inside the PDF</li>
+        <li>Improperly flattened forms</li>
+      </ul>
+
+      <p class="sub" style="margin-top:18px;">
+        Commonly used prior to submission in federal courts (CM/ECF) and major state portals (e.g., Texas eFile, NYSCEF,
+        California, Delaware, Florida). Rules vary by court; this tool targets frequent technical triggers.
+      </p>
+
+      <div class="rule"></div>
+
+      <!-- FAQ (on-page) -->
+      <div class="kicker">FAQ</div>
+      <div class="faq">
+        <h3>Why are interactive PDFs rejected by courts?</h3>
+        <p>Many filing systems block interactive/XFA PDFs because dynamic form content can fail automated processing. Courts typically require static PDFs.</p>
+
+        <h3>What is an XFA form?</h3>
+        <p>XFA is a dynamic PDF form technology. Many court portals do not accept XFA and may reject filings until converted to a static PDF.</p>
+
+        <h3>How do I flatten a PDF for court filing?</h3>
+        <p>Flattening converts interactive fields to static page content. PDFMender produces static output designed to reduce common rejection triggers.</p>
+
+        <h3>Why are encrypted PDFs rejected?</h3>
+        <p>Encryption/restrictions can block processing and scanning. Removing encryption improves compatibility with court filing portals.</p>
       </div>
+
+      <div class="footer">
+        © PDFMender. Technical processing only. No legal advice. Designed to reduce common technical rejection causes. Subject to clerk review.
+      </div>
+
     </div>
   </div>
 </body>
