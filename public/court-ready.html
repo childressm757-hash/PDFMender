@@ -1,107 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Court-Ready Processor</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-    button {
-      padding: 8px 14px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-    #report {
-      margin-top: 30px;
-      padding: 20px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Court Filing Preflight (Check & Fix) | PDFMender</title>
+  <meta name="description" content="Court filing preflight: detect and correct common CM/ECF and state eFile rejection causes. Generates a clerk-language report and a filing-ready PDF." />
+
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <div class="name">PDFMender</div>
+        <div class="tag">Court Filing Preflight</div>
+      </div>
+      <div class="nav">
+        <a href="/">Home</a>
+        <a href="/fix-court-rejected-pdf.html">Fix Court-Rejected PDF</a>
+      </div>
+    </div>
 
-  <h1>Run Before Filing</h1>
+    <div class="hero">
+      <div class="kicker">Pre-submission safeguard</div>
+      <h1 class="h1">Court Filing Preflight (Check & Fix)</h1>
+      <p class="sub">
+        Upload a PDF to detect and automatically correct common technical rejection causes before submitting to CM/ECF or state eFile portals.
+      </p>
+    </div>
 
-  <form id="uploadForm">
-    <input type="file" name="file" accept="application/pdf" required />
-    <br/>
-    <button type="submit">Make Court-Ready</button>
-  </form>
+    <div class="form">
+      <form id="uploadForm">
+        <label for="file">Upload PDF</label>
+        <input id="file" type="file" name="file" accept="application/pdf" required />
+        <div class="actions">
+          <button class="btn" type="submit">Run Preflight</button>
+          <a class="btn secondary" href="/">Back</a>
+        </div>
+      </form>
+      <div class="small">
+        Files are processed and deleted after completion. Designed to reduce common technical rejection causes. Subject to clerk review.
+      </div>
+    </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    <div id="reportRoot"></div>
 
-      const form = document.getElementById("uploadForm");
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("uploadForm");
+        const reportRoot = document.getElementById("reportRoot");
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          reportRoot.innerHTML = "";
 
-        const existingReport = document.getElementById("report");
-        if (existingReport) existingReport.remove();
+          const formData = new FormData(form);
 
-        const formData = new FormData(form);
-
-        try {
-          const response = await fetch("/court/court-ready", {
-            method: "POST",
-            body: formData
-          });
+          let response;
+          try {
+            response = await fetch("/court/court-ready", { method: "POST", body: formData });
+          } catch (err) {
+            reportRoot.innerHTML = '<div class="report"><span class="badge bad">Error</span><p class="note">Network error. Please try again.</p></div>';
+            return;
+          }
 
           if (!response.ok) {
-            alert("Processing failed.");
+            reportRoot.innerHTML = '<div class="report"><span class="badge bad">Error</span><p class="note">Processing failed. Please try a different PDF.</p></div>';
             return;
           }
 
           const result = await response.json();
 
-          const container = document.createElement("div");
-          container.id = "report";
+          const status = (result.status || "").toLowerCase();
+          const badgeClass =
+            status.includes("no_risk") ? "ok" :
+            status.includes("processed") ? "warn" : "bad";
 
-          let html = "<h2>Compliance Report</h2>";
-          html += "<p><strong>Status:</strong> " + result.status + "</p>";
+          let html = `<div class="report">
+            <span class="badge ${badgeClass}">${result.status || "result"}</span>
+            <div class="note" style="margin-top:10px;">${result.disclaimer || ""}</div>
+          `;
 
-          if (result.detected && result.detected.length > 0) {
-            html += "<h3>Detected Issues</h3><ul>";
-            result.detected.forEach(d => {
-              html += "<li><strong>" + d.issue + "</strong><br/>" + d.risk + "</li>";
-            });
-            html += "</ul>";
+          if (result.detected && result.detected.length) {
+            html += `<h3 style="margin:14px 0 6px;">Detected Issues</h3><ul class="list">`;
+            for (const d of result.detected) {
+              html += `<li><strong>${d.issue}</strong><br/><span style="color:var(--muted)">${d.risk}</span></li>`;
+            }
+            html += `</ul>`;
           }
 
-          if (result.resolved && result.resolved.length > 0) {
-            html += "<h3>Corrections Applied</h3><ul>";
-            result.resolved.forEach(r => {
-              html += "<li>" + r + "</li>";
-            });
-            html += "</ul>";
+          if (result.resolved && result.resolved.length) {
+            html += `<h3 style="margin:14px 0 6px;">Corrections Applied</h3><ul class="list">`;
+            for (const r of result.resolved) html += `<li>${r}</li>`;
+            html += `</ul>`;
           }
 
-          html += "<p><em>" + result.disclaimer + "</em></p>";
+          if (result.download) {
+            html += `<div class="actions" style="margin-top:14px;">
+              <a class="btn" href="${result.download}">Download Filing-Ready PDF</a>
+              <a class="btn secondary" href="/fix-court-rejected-pdf.html">Fix Interactive/XFA (Standalone)</a>
+            </div>`;
+          }
 
-          html += '<button id="downloadBtn">Download Clean File</button>';
-
-          container.innerHTML = html;
-          document.body.appendChild(container);
-
-          document.getElementById("downloadBtn").onclick = () => {
-            window.location.href = result.download;
-          };
-
-        } catch (err) {
-          console.error(err);
-          alert("Unexpected error occurred.");
-        }
-
+          html += `</div>`;
+          reportRoot.innerHTML = html;
+        });
       });
-
-    });
-  </script>
-
+    </script>
+  </div>
 </body>
 </html>
