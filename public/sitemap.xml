@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://YOURDOMAIN.com/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
+  <url><loc>https://pdfmender.com/</loc></url>
+  <url><loc>https://pdfmender.com/court-preflight.html</loc></url>
+  <url><loc>https://pdfmender.com/fix-interactive-xfa.html</loc></url>
+  <url><loc>https://pdfmender.com/pdf-must-be-flattened.html</loc></url>
+  <url><loc>https://pdfmender.com/cm-ecf-interactive-pdf-rejected.html</loc></url>
+  <url><loc>https://pdfmender.com/encrypted-pdf-filing-error.html</loc></url>
+  <url><loc>https://pdfmender.com/about.html</loc></url>
+  <url><loc>https://pdfmender.com/privacy.html</loc></url>
+  <url><loc>https://pdfmender.com/terms.html</loc></url>
+  <url><loc>https://pdfmender.com/contact.html</loc></url>
 
-  <url>
-    <loc>https://YOURDOMAIN.com/court-ready.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://YOURDOMAIN.com/court/pdf-rejected-interactive-form.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
+  <!-- Tool pages (if they exist publicly) -->
+  <url><loc>https://pdfmender.com/court-ready.html</loc></url>
+  <url><loc>https://pdfmender.com/court/pdf-rejected-interactive-form.html</loc></url>
 </urlset>
