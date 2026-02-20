@@ -2,301 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- SEO -->
-  <title>PDFMender — Simple Tools for Court-Ready PDFs</title>
-  <meta name="description" content="PDFMender provides simple tools to fix common PDF submission issues, including court rejections caused by interactive or XFA form data." />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://pdfmender.com/" />
+  <title>Avoid Court Rejection — Validate & Fix PDFs Before Filing | PDFMender</title>
+  <meta name="description" content="Preflight and fix common CM/ECF and state eFile PDF rejection causes: interactive/XFA forms, encryption, embedded scripts, attachments. Processed and deleted after completion." />
 
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ETYW9NNRDN"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-ETYW9NNRDN');
-  </script>
-
-  <style>
-    :root{
-      --bg:#f4f6f8;
-      --card:#ffffff;
-      --text:#111827;
-      --muted:#6b7280;
-      --border:rgba(17,24,39,0.10);
-      --shadow:0 18px 40px rgba(17,24,39,0.10);
-      --accent:#111827;
-      --accentSoft:rgba(17,24,39,0.06);
-      --focus:rgba(59,130,246,0.35);
-    }
-
-    * { box-sizing:border-box; }
-
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-      background:
-        radial-gradient(900px 420px at 15% 8%, rgba(17,24,39,0.06), transparent 60%),
-        radial-gradient(700px 350px at 85% 18%, rgba(17,24,39,0.05), transparent 60%),
-        var(--bg);
-      color:var(--text);
-      line-height:1.45;
-    }
-
-    .wrap{
-      max-width:920px;
-      margin:0 auto;
-      padding:28px 18px 48px;
-    }
-
-    /* Top bar */
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:24px;
-    }
-
-    .brand{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      text-decoration:none;
-      color:var(--text);
-      font-weight:800;
-      letter-spacing:-0.02em;
-    }
-
-    .brand-mark{
-      width:34px;
-      height:34px;
-      border-radius:10px;
-      background:linear-gradient(180deg, rgba(17,24,39,0.18), rgba(17,24,39,0.05));
-      border:1px solid var(--border);
-      display:grid;
-      place-items:center;
-      font-size:14px;
-    }
-
-    .top-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .link{
-      color:var(--text);
-      text-decoration:none;
-      font-weight:600;
-      font-size:14px;
-      padding:8px 10px;
-      border-radius:10px;
-    }
-    .link:hover{ background:var(--accentSoft); }
-    .link:focus{ outline:3px solid var(--focus); outline-offset:2px; }
-
-    /* Card */
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:32px;
-      box-shadow:var(--shadow);
-    }
-
-    h1{
-      margin:0 0 12px;
-      font-size:30px;
-      letter-spacing:-0.03em;
-      line-height:1.15;
-    }
-
-    .subhead{
-      margin:0 0 22px;
-      color:var(--muted);
-      font-size:15px;
-      max-width:70ch;
-    }
-
-    .section{
-      margin-top:22px;
-    }
-
-    h2{
-      margin:0 0 8px;
-      font-size:16px;
-      letter-spacing:-0.01em;
-    }
-
-    p{
-      margin:0 0 10px;
-    }
-
-    .primary-action{
-      margin-top:20px;
-      display:inline-block;
-      background:var(--accent);
-      color:white;
-      padding:14px 20px;
-      font-size:15px;
-      font-weight:700;
-      text-decoration:none;
-      border-radius:12px;
-      box-shadow:0 14px 22px rgba(17,24,39,0.18);
-    }
-    .primary-action:hover{ filter:brightness(1.04); }
-    .primary-action:focus{ outline:3px solid var(--focus); outline-offset:2px; }
-
-    .footer{
-      margin-top:36px;
-      padding-top:16px;
-      border-top:1px solid var(--border);
-      font-size:12.5px;
-      color:var(--muted);
-      text-align:center;
-      display:grid;
-      gap:6px;
-    }
-
-    .footer a{
-      color:var(--text);
-      text-decoration:none;
-      font-weight:700;
-    }
-    .footer a:hover{ text-decoration:underline; }
-    .site-footer {
-  margin-top: 60px;
-  padding: 32px 16px;
-  background: #f3f4f6;
-  border-top: 1px solid #e5e7eb;
-  text-align: center;
-  font-size: 14px;
-  color: #374151;
-  }
-
-  .footer-nav {
-  margin-bottom: 12px;
-  }
-
-  .footer-nav a {
-  margin: 0 10px;
-  color: #1f2937;
-  text-decoration: none;
-  font-weight: 500;
-  }
-
-  .footer-nav a:hover {
-  text-decoration: underline;
-  }
-
-  .footer-trust p {
-  margin: 6px 0;
-  font-weight: 500;
-  }
-
-  .footer-disclaimer {
-  margin-top: 12px;
-  font-size: 12px;
-  color: #6b7280;
-  }
-    .cta-subtext {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-  </style>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
-
-
 <body>
-  <div class="wrap">
-    <!-- Header -->
-    <div class="topbar">
-      <a class="brand" href="/" aria-label="PDFMender home">
-        <span class="brand-mark">PM</span>
-        <span>PDFMender</span>
-      </a>
-
-      <div class="top-actions">
-        <a class="link" href="/court/pdf-rejected-interactive-form.html">Court Tool</a>
-        <a class="link" href="mailto:support@pdfmender.com">Contact</a>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <div class="name">PDFMender</div>
+        <div class="tag">Last stop before you file</div>
+      </div>
+      <div class="nav">
+        <a href="/court-ready.html">Court Filing Preflight</a>
+        <a href="/fix-court-rejected-pdf.html">Fix Court-Rejected PDF</a>
       </div>
     </div>
 
-    <!-- Main card -->
-    <main class="card" role="main">
-      <h1>Simple Tools for Court-Ready PDFs</h1>
-
-      <p class="subhead">
-        PDFMender provides automated tools to fix common PDF submission issues —
-        including court rejections caused by interactive or XFA form data.
+    <div class="hero">
+      <div class="kicker">Court filing compliance</div>
+      <h1 class="h1">Avoid Court Rejection. Validate & Fix Your PDF Before Submission.</h1>
+      <p class="sub">
+        Automatically detects and corrects common federal <strong>CM/ECF</strong> and state eFile rejection causes — including
+        <strong>interactive/XFA forms</strong>, <strong>encryption</strong>, <strong>embedded JavaScript</strong>, and <strong>attachments</strong>.
       </p>
 
-      <div class="section">
-        <h2>What this is</h2>
+      <div class="actions">
+        <a class="btn" href="/court-ready.html">Run Court Filing Preflight</a>
+        <a class="btn secondary" href="/fix-court-rejected-pdf.html">Fix Interactive / XFA PDF</a>
+      </div>
+
+      <p class="small">
+        Designed to reduce common technical rejection causes. Subject to clerk review.
+        Files are processed and deleted after completion.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Court Filing Preflight (Check & Fix)</h2>
         <p>
-          PDFMender is a document processing utility. Tools run automatically and
-          are designed to address specific, well-known PDF formatting problems
-          encountered during court and government filings.
+          Run this before uploading to CM/ECF or state eFile systems. You get a clerk-language report and a filing-ready PDF.
         </p>
+        <a class="btn" href="/court-ready.html">Open Preflight</a>
       </div>
 
-      <div class="section">
-        <h2>Most common use</h2>
+      <div class="card">
+        <h2>PDF Rejected by Court? Fix Interactive / XFA Forms</h2>
         <p>
-          Courts frequently reject PDFs that contain interactive form fields or
-          XFA data. These documents must be flattened into static PDFs before
-          they can be accepted.
+          Converts interactive and XFA PDFs into static, court-acceptable files. Common fix after a rejection notice.
         </p>
-
-        <a
-          class="primary-action"
-          href="/court/pdf-rejected-interactive-form.html"
-          onclick="gtag('event','open_court_tool',{event_category:'Navigation'})"
-        >
-          Fix a Court-Rejected PDF
-        </a>
-        <p class="cta-subtext">Upload → process → download. No account required.</p>
+        <a class="btn" href="/fix-court-rejected-pdf.html">Open Fix Tool</a>
       </div>
-    
+    </div>
 
+    <div class="card" style="margin-top:14px;">
+      <div class="kicker">Where this helps</div>
+      <p style="margin:0; color:var(--muted);">
+        Commonly used prior to submission to <strong>CM/ECF</strong> and major state eFile portals (e.g., Texas, New York, California, Florida, Delaware).
+        Rules vary by court; this tool is designed to reduce frequent technical rejection triggers.
+      </p>
+    </div>
 
-      <div class="footer">
-        <div>
-          PDFMender is a software utility and does not provide legal advice,
-          legal review, or legal representation.
-        </div>
-        <div>
-          Questions or issues? <a href="mailto:support@pdfmender.com">support@pdfmender.com</a>
-        </div>
-        <div>
-          © 2026 PDFMender · Document processing utility
-        </div>
-      </div>
-    </main>
+    <div class="footer">
+      © PDFMender — Technical processing only. No legal advice. “Designed to reduce common rejection causes. Subject to clerk review.”
+    </div>
   </div>
-  <footer style="
-  margin-top: 48px;
-  padding-top: 16px;
-  border-top: 1px solid #e5e5e5;
-  font-size: 13px;
-  color: #555;
-  text-align: center;
-">
-  <div style="margin-bottom: 8px;">
-    <a href="/" style="margin: 0 8px; color: #000;">Home</a>
-    <a href="/about.html" style="margin: 0 8px; color: #000;">About</a>
-    <a href="/privacy.html" style="margin: 0 8px; color: #000;">Privacy</a>
-    <a href="mailto:support@pdfmender.com" style="margin: 0 8px; color: #000;">Contact</a>
-  </div>
-  <div>
-    Files are processed automatically and deleted after processing.
-  </div>
-</footer>
-
 </body>
 </html>
