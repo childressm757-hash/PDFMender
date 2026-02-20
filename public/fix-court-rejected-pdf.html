@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>PDF Rejected by Court? Fix Interactive / XFA Forms | PDFMender</title>
+  <meta name="description" content="Fix common court PDF rejection causes: convert interactive and XFA PDFs to static filing-ready PDFs. Works for CM/ECF and state eFile portals." />
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <div class="name">PDFMender</div>
+        <div class="tag">Fix Court-Rejected PDFs</div>
+      </div>
+      <div class="nav">
+        <a href="/">Home</a>
+        <a href="/court-ready.html">Court Filing Preflight</a>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="kicker">Common rejection fix</div>
+      <h1 class="h1">PDF Rejected by Court? Fix Interactive / XFA Forms</h1>
+      <p class="sub">
+        Converts interactive and XFA PDFs into static, court-acceptable PDFs. Designed to reduce common technical rejection causes.
+      </p>
+    </div>
+
+    <div class="form">
+      <form id="fixForm">
+        <label for="file">Upload PDF</label>
+        <input id="file" type="file" name="file" accept="application/pdf" required />
+        <div class="actions">
+          <button class="btn" type="submit">Fix & Download</button>
+          <a class="btn secondary" href="/">Back</a>
+        </div>
+      </form>
+
+      <div class="small">
+        This uses your existing PDF rewrite pipeline. Files are processed and deleted after completion. Subject to clerk review.
+      </div>
+    </div>
+
+    <div id="msg"></div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("fixForm");
+        const msg = document.getElementById("msg");
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          msg.innerHTML = '<div class="report"><span class="badge warn">Working</span><div class="note">Processing…</div></div>';
+
+          const formData = new FormData(form);
+
+          const res = await fetch("/api/flatten", {
+            method: "POST",
+            body: formData
+          });
+
+          if (!res.ok) {
+            msg.innerHTML = '<div class="report"><span class="badge bad">Error</span><div class="note">Fix failed. Try a different PDF.</div></div>';
+            return;
+          }
+
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "court-acceptable.pdf";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+
+          msg.innerHTML = '<div class="report"><span class="badge ok">Done</span><div class="note">Downloaded a static PDF.</div></div>';
+        });
+      });
+    </script>
+  </div>
+</body>
+</html>
