@@ -11,13 +11,10 @@
   --border:#182235;
   --border2:#22314A;
 
-  --primary:#2F6BFF;      /* bright blue (wife-approved direction) */
+  --primary:#2F6BFF;
   --primaryHover:#2A60E6;
-  --primarySoft:rgba(47,107,255,.14);
 
   --radius:18px;
-  --radiusSm:14px;
-
   --max:1120px;
 }
 
@@ -44,7 +41,7 @@ a:hover{ text-decoration:none; }
   padding:30px 22px 70px;
 }
 
-/* ---------- HEADER / NAV ---------- */
+/* HEADER */
 .topbar{
   display:flex;
   align-items:center;
@@ -111,7 +108,7 @@ a:hover{ text-decoration:none; }
   background:rgba(255,255,255,.04);
 }
 
-/* ---------- LAYOUT PANELS ---------- */
+/* MAIN PANEL */
 .shell{
   border:1px solid var(--border);
   border-radius:var(--radius);
@@ -119,10 +116,6 @@ a:hover{ text-decoration:none; }
     radial-gradient(900px 520px at 30% 12%, rgba(47,107,255,.10), transparent 60%),
     linear-gradient(180deg, rgba(15,23,42,.55), rgba(11,18,32,1));
   padding:40px;
-}
-
-.section{
-  margin-top:30px;
 }
 
 .kicker{
@@ -134,7 +127,6 @@ a:hover{ text-decoration:none; }
   margin-bottom:10px;
 }
 
-/* Balanced dominant headline (not cartoonish) */
 .h1{
   font-size:42px;
   line-height:1.12;
@@ -146,12 +138,10 @@ a:hover{ text-decoration:none; }
 .sub{
   color:var(--muted);
   font-size:16px;
-  max-width:86ch;
+  max-width:90ch;
 }
 
-.sub strong{
-  color:var(--text);
-}
+.sub strong{ color:var(--text); }
 
 .btnrow{
   display:flex;
@@ -173,7 +163,6 @@ a:hover{ text-decoration:none; }
   font-size:15px;
   cursor:pointer;
   transition:background 140ms ease, transform 90ms ease, border-color 140ms ease;
-  /* NO SHADOWS */
   box-shadow:none;
 }
 
@@ -196,7 +185,6 @@ a:hover{ text-decoration:none; }
   font-size:12px;
 }
 
-/* ---------- GRID CARDS ---------- */
 .rule{
   height:1px;
   background:var(--border);
@@ -218,7 +206,6 @@ a:hover{ text-decoration:none; }
   border-radius:var(--radius);
   background:linear-gradient(180deg, rgba(14,23,42,.92), rgba(11,18,32,1));
   padding:24px;
-  /* NO drop shadow */
   box-shadow:none;
 }
 
@@ -235,6 +222,12 @@ a:hover{ text-decoration:none; }
   margin-bottom:14px;
 }
 
+.h2{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
 .list{
   padding-left:18px;
   color:var(--muted);
@@ -245,27 +238,19 @@ a:hover{ text-decoration:none; }
   font-size:14px;
 }
 
-.h2{
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:10px;
-}
-
 .faq h3{
   font-size:14px;
   font-weight:900;
   margin-top:16px;
 }
-
 .faq h3:first-child{ margin-top:0; }
-
 .faq p{
   color:var(--muted);
   margin-top:6px;
   font-size:14px;
 }
 
-/* ---------- FOOTER ---------- */
+/* FOOTER */
 .footer{
   margin-top:24px;
   padding-top:18px;
@@ -292,9 +277,4 @@ a:hover{ text-decoration:none; }
 .footerlinks a:hover{
   color:var(--text);
   background:rgba(255,255,255,.04);
-}
-
-.smallprint{
-  color:var(--muted2);
-  max-width:100ch;
 }
